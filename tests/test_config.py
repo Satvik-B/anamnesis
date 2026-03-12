@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from claude_memory.config import Config, load_config, AVAILABLE_MODULES, MODULE_DEPENDENCIES
+from anamnesis.config import Config, load_config, AVAILABLE_MODULES, MODULE_DEPENDENCIES
 
 
 class TestConfigParsing:

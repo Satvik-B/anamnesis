@@ -1,4 +1,4 @@
-"""Shared pytest fixtures for claude-memory tests."""
+"""Shared pytest fixtures for anamnesis tests."""
 
 import os
 import subprocess
@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from claude_memory.config import Config
+from anamnesis.config import Config
 
 
 @pytest.fixture
@@ -41,7 +41,7 @@ def installed_project(tmp_project, sample_config):
     If the skeleton directory is missing (not yet created by the skeleton-writer),
     create the minimal expected structure manually.
     """
-    from claude_memory.installer import install
+    from anamnesis.installer import install
 
     try:
         install(tmp_project, sample_config)
@@ -76,8 +76,8 @@ def installed_project(tmp_project, sample_config):
         rules_file.write_text("# Memory Rule\nPlaceholder rule file.\n")
 
         # Write version file
-        from claude_memory import __version__
-        version_file = claude_dir / ".claude-memory-version"
+        from anamnesis import __version__
+        version_file = claude_dir / ".anamnesis-version"
         version_file.write_text(__version__ + "\n")
 
     return tmp_project

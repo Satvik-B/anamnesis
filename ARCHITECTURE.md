@@ -1,10 +1,10 @@
 # Architecture
 
-System design document for claude-memory contributors.
+System design document for anamnesis contributors.
 
 ## Overview
 
-claude-memory is a file-based memory system that gives Claude Code persistent
+anamnesis is a file-based memory system that gives Claude Code persistent
 context across sessions. It works by injecting a rule file into Claude Code's
 `.claude/rules/` directory, which instructs the agent to read and write a
 structured set of Markdown files.
@@ -148,13 +148,13 @@ Claude Code writes auto-memories to `~/.claude/projects/<project>/memory/`.
 These are ephemeral notes that accumulate during sessions but aren't part of
 the curated memory system.
 
-`claude-memory sync` bridges this gap:
+`anamnesis sync` bridges this gap:
 
 ```
 ~/.claude/projects/<project>/memory/
   (auto-generated, ephemeral)
          |
-         | claude-memory sync
+         | anamnesis sync
          v
 .claude/memory/
   (curated, version-controlled)
@@ -193,7 +193,7 @@ not removed.
 
 ### Note Compaction
 
-`claude-memory compact` handles memory hygiene:
+`anamnesis compact` handles memory hygiene:
 - Deduplicates entries across MEMORY.md and INDEX.md
 - Consolidates related entries
 - Archives stale memories (configurable threshold)
@@ -216,7 +216,7 @@ can be added to `.claude/skills/` to create memory-aware workflows.
 
 ### Platform Support
 
-claude-memory detects the OS and uses the appropriate auto-memory path:
+anamnesis detects the OS and uses the appropriate auto-memory path:
 - macOS: `~/.claude/projects/<project>/memory/`
 - Linux: `~/.claude/projects/<project>/memory/`
 - Windows: `%USERPROFILE%\.claude\projects\<project>\memory\`

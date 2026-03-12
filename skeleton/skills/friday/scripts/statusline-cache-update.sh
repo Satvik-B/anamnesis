@@ -3,7 +3,7 @@
 # Reads workspace files + config to build cache JSON.
 # Called by statusline.sh when cache is stale (>5 min).
 
-CONFIG_FILE="$HOME/.claude-memory.yaml"
+CONFIG_FILE="$HOME/.anamnesis.yaml"
 CACHE_FILE="/tmp/claude-statusline-cache.json"
 
 # --- Find repository root ---

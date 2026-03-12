@@ -1,15 +1,15 @@
 # Full Example
 
-This example shows a complete claude-memory setup with all directories
+This example shows a complete anamnesis setup with all directories
 and files populated.
 
 To generate this structure in your own project, run:
 
 ```bash
-claude-memory init
+anamnesis init
 ```
 
-Or copy the files from `skeleton/` in the claude-memory repository:
+Or copy the files from `skeleton/` in the anamnesis repository:
 
 ```
 skeleton/

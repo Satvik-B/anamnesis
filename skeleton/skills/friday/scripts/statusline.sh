@@ -2,9 +2,9 @@
 # Friday Statusline Renderer
 # Reads JSON from stdin (Claude session data) + cache file (planner data)
 # Outputs 2-line statusline with color.
-# Components are opt-in via ~/.claude-memory.yaml.
+# Components are opt-in via ~/.anamnesis.yaml.
 
-CONFIG_FILE="$HOME/.claude-memory.yaml"
+CONFIG_FILE="$HOME/.anamnesis.yaml"
 CACHE_FILE="/tmp/claude-statusline-cache.json"
 CACHE_UPDATER="$HOME/.claude/friday-statusline-cache-update.sh"
 

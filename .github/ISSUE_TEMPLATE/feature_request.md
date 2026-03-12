@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature for claude-memory
+about: Suggest a new feature for anamnesis
 title: "[Feature] "
 labels: enhancement
 assignees: ""

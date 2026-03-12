@@ -5,7 +5,7 @@
 
 ## Current State (v1.0)
 
-In v1.0, claude-memory is a per-user, per-project system. Each developer has
+In v1.0, anamnesis is a per-user, per-project system. Each developer has
 their own `.claude/memory/` directory with their own memories.
 
 ### Sharing via Git

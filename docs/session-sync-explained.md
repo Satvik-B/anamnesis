@@ -1,6 +1,6 @@
 # Session Sync Explained
 
-How `claude-memory sync` bridges auto-memories and your curated memory system.
+How `anamnesis sync` bridges auto-memories and your curated memory system.
 
 ## Background
 
@@ -23,7 +23,7 @@ directory.
 
 ### Step 1: Discovery
 
-`claude-memory sync` finds your auto-memory directory by:
+`anamnesis sync` finds your auto-memory directory by:
 1. Detecting your OS (macOS, Linux, or Windows)
 2. Resolving the Claude Code project path
 3. Scanning for `.md` files in the auto-memory directory
@@ -65,7 +65,7 @@ After review, accepted memories are:
 Basic sync:
 
 ```bash
-claude-memory sync
+anamnesis sync
 ```
 
 This scans for auto-memories and walks you through each one interactively.
@@ -90,4 +90,4 @@ Session sync is intentionally conservative:
 - Run sync after intensive work sessions where Claude learned a lot
 - Don't sync after every session -- weekly or biweekly is usually enough
 - Review proposed merges carefully; auto-memories can be noisy
-- Use `claude-memory compact` afterward to clean up any redundancy
+- Use `anamnesis compact` afterward to clean up any redundancy

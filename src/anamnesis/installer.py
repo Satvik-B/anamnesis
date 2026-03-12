@@ -7,12 +7,12 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from claude_memory import __version__
-from claude_memory.config import Config
+from anamnesis import __version__
+from anamnesis.config import Config
 
 
 # Sentinel written after install so we know which version was installed
-VERSION_FILE = ".claude/.claude-memory-version"
+VERSION_FILE = ".claude/.anamnesis-version"
 
 # Files that should never be overwritten on update (user-editable data)
 USER_DATA_GLOBS = [
@@ -34,7 +34,7 @@ def _skeleton_root() -> Path:
     """
     # 1. Check relative to this source file (editable install / dev checkout)
     this_file = Path(__file__).resolve()
-    # src/claude_memory/installer.py -> repo root is 3 levels up
+    # src/anamnesis/installer.py -> repo root is 3 levels up
     repo_root = this_file.parent.parent.parent
     dev_skeleton = repo_root / "skeleton"
     if dev_skeleton.is_dir():
@@ -42,7 +42,7 @@ def _skeleton_root() -> Path:
 
     # 2. importlib.resources for installed packages
     try:
-        ref = importlib.resources.files("claude_memory") / "skeleton"
+        ref = importlib.resources.files("anamnesis") / "skeleton"
         if hasattr(ref, "_path"):
             p = Path(ref._path)
             if p.is_dir():

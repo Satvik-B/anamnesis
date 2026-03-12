@@ -2,7 +2,7 @@
 """Fetch Google Calendar events directly via the Google Calendar API.
 
 Uses the same OAuth credentials as the google-calendar-mcp-server.
-Reads timezone from ~/.claude-memory.yaml (falls back to UTC).
+Reads timezone from ~/.anamnesis.yaml (falls back to UTC).
 
 Usage: fetch-calendar.py <output.json> [--date YYYY-MM-DD]
 """
@@ -38,8 +38,8 @@ CALENDAR_API = "https://www.googleapis.com/calendar/v3"
 
 
 def load_config_timezone():
-    """Read timezone from ~/.claude-memory.yaml, fallback to UTC."""
-    config_path = os.path.expanduser("~/.claude-memory.yaml")
+    """Read timezone from ~/.anamnesis.yaml, fallback to UTC."""
+    config_path = os.path.expanduser("~/.anamnesis.yaml")
     if os.path.exists(config_path):
         try:
             import yaml

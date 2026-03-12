@@ -9,7 +9,7 @@ An engineer's personal assistant workspace. Tracks sprints, runs daily rituals, 
 
 ## Quick Reference
 
-- **Config**: `~/.claude-memory.yaml`
+- **Config**: `~/.anamnesis.yaml`
 - **Workspace**: `<repo-root>/friday/`
 - **Modules**: sprint_tracking, daily_rituals, calendar, slack, jira, github_reviews, personal, statusline, journal, ideas, session_sync
 
@@ -19,7 +19,7 @@ An engineer's personal assistant workspace. Tracks sprints, runs daily rituals, 
 
 ```python
 # Check what already exists
-config_exists = os.path.exists(os.path.expanduser("~/.claude-memory.yaml"))
+config_exists = os.path.exists(os.path.expanduser("~/.anamnesis.yaml"))
 workspace_exists = os.path.exists("<repo-root>/friday/")
 ```
 
@@ -84,13 +84,13 @@ If missing, warn: "(a) disable the module, or (b) set up via `/setup` first."
 
 ### Step 6: Write config
 
-Write `~/.claude-memory.yaml` with all collected values. See `assets/claude-memory.conf.example.yaml` for full schema.
+Write `~/.anamnesis.yaml` with all collected values. See `assets/anamnesis.conf.example.yaml` for full schema.
 
 ### Step 7: Generate workspace
 
 Run: `python3 <skill_dir>/scripts/init-workspace.py`
 
-The script reads `~/.claude-memory.yaml` and generates the workspace at `<repo-root>/friday/` with only files for enabled modules.
+The script reads `~/.anamnesis.yaml` and generates the workspace at `<repo-root>/friday/` with only files for enabled modules.
 
 ### Step 8: Calendar cron (if calendar + cron opted in)
 
@@ -124,7 +124,7 @@ Test connectivity for each enabled module. Show summary:
 ```
 Friday setup complete!
   Workspace: <repo-root>/friday/
-  Config: ~/.claude-memory.yaml
+  Config: ~/.anamnesis.yaml
   Modules: sprint_tracking, daily_rituals, calendar, jira
   Calendar cron: installed (hourly)
   Statusline: not enabled
@@ -137,7 +137,7 @@ Friday setup complete!
 
 ### Config Loading
 
-On every interaction in the friday workspace, read `~/.claude-memory.yaml` to determine enabled modules. This drives which procedures to follow.
+On every interaction in the friday workspace, read `~/.anamnesis.yaml` to determine enabled modules. This drives which procedures to follow.
 
 ### Trigger Detection
 

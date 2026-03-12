@@ -1,12 +1,12 @@
-"""Tests for the claude-memory installer module."""
+"""Tests for the anamnesis installer module."""
 
 import textwrap
 from pathlib import Path
 
 import pytest
 
-from claude_memory.config import Config
-from claude_memory.installer import install, update
+from anamnesis.config import Config
+from anamnesis.installer import install, update
 
 
 def _try_install(project_path, config=None):
@@ -76,8 +76,8 @@ class TestInstallInit:
         """Init should write a version sentinel file."""
         _try_install(tmp_project)
 
-        from claude_memory import __version__
-        version_file = tmp_project / ".claude" / ".claude-memory-version"
+        from anamnesis import __version__
+        version_file = tmp_project / ".claude" / ".anamnesis-version"
         assert version_file.exists()
         assert version_file.read_text().strip() == __version__
 

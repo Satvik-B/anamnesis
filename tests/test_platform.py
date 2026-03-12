@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from claude_memory.platform import detect_platform, get_lock_command
+from anamnesis.platform import detect_platform, get_lock_command
 
 
 class TestDetectPlatform:
@@ -18,19 +18,19 @@ class TestDetectPlatform:
 
     def test_detect_macos(self):
         """When platform.system() returns 'Darwin', detect_platform() should return 'macos'."""
-        with mock.patch("claude_memory.platform.platform") as mock_plat:
+        with mock.patch("anamnesis.platform.platform") as mock_plat:
             mock_plat.system.return_value = "Darwin"
             assert detect_platform() == "macos"
 
     def test_detect_linux(self):
         """When platform.system() returns 'Linux', detect_platform() should return 'linux'."""
-        with mock.patch("claude_memory.platform.platform") as mock_plat:
+        with mock.patch("anamnesis.platform.platform") as mock_plat:
             mock_plat.system.return_value = "Linux"
             assert detect_platform() == "linux"
 
     def test_detect_windows(self):
         """When platform.system() returns 'Windows', detect_platform() should return 'windows'."""
-        with mock.patch("claude_memory.platform.platform") as mock_plat:
+        with mock.patch("anamnesis.platform.platform") as mock_plat:
             mock_plat.system.return_value = "Windows"
             assert detect_platform() == "windows"
 
@@ -46,18 +46,18 @@ class TestGetLockCommand:
 
     def test_macos_uses_lockf(self):
         """On macOS, the lock command should be lockf."""
-        with mock.patch("claude_memory.platform.platform") as mock_plat:
+        with mock.patch("anamnesis.platform.platform") as mock_plat:
             mock_plat.system.return_value = "Darwin"
             assert get_lock_command() == "lockf"
 
     def test_linux_uses_flock(self):
         """On Linux, the lock command should be flock."""
-        with mock.patch("claude_memory.platform.platform") as mock_plat:
+        with mock.patch("anamnesis.platform.platform") as mock_plat:
             mock_plat.system.return_value = "Linux"
             assert get_lock_command() == "flock"
 
     def test_unknown_platform_defaults_to_flock(self):
         """An unknown platform should default to flock with a warning."""
-        with mock.patch("claude_memory.platform.platform") as mock_plat:
+        with mock.patch("anamnesis.platform.platform") as mock_plat:
             mock_plat.system.return_value = "FreeBSD"
             assert get_lock_command() == "flock"

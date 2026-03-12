@@ -1,4 +1,4 @@
-"""CLI entry point for claude-memory."""
+"""CLI entry point for anamnesis."""
 
 from __future__ import annotations
 
@@ -6,14 +6,14 @@ import argparse
 import sys
 from pathlib import Path
 
-from claude_memory import __version__
+from anamnesis import __version__
 
 
 def cmd_init(args: argparse.Namespace) -> int:
-    """Initialize claude-memory in the current (or specified) project."""
-    from claude_memory.config import collect_config_interactive, save_config, load_config
-    from claude_memory.installer import install
-    from claude_memory.project import find_project_root
+    """Initialize anamnesis in the current (or specified) project."""
+    from anamnesis.config import collect_config_interactive, save_config, load_config
+    from anamnesis.installer import install
+    from anamnesis.project import find_project_root
 
     project_dir = Path(args.project_dir) if args.project_dir else None
 
@@ -23,14 +23,14 @@ def cmd_init(args: argparse.Namespace) -> int:
         print("Error: not inside a git repository. Use --project-dir or cd into a repo.", file=sys.stderr)
         return 1
 
-    print(f"Initializing claude-memory in: {project_dir}")
+    print(f"Initializing anamnesis in: {project_dir}")
     print()
 
     # Collect or load config
     config = collect_config_interactive()
     save_config(config)
     print()
-    print(f"Config saved to: ~/.claude-memory.yaml")
+    print(f"Config saved to: ~/.anamnesis.yaml")
     print()
 
     # Install skeleton files
@@ -49,8 +49,8 @@ def cmd_init(args: argparse.Namespace) -> int:
 
 def cmd_update(args: argparse.Namespace) -> int:
     """Update rule/skill files without touching user data."""
-    from claude_memory.installer import update
-    from claude_memory.project import find_project_root
+    from anamnesis.installer import update
+    from anamnesis.project import find_project_root
 
     project_dir = Path(args.project_dir) if args.project_dir else None
 
@@ -79,8 +79,8 @@ def cmd_update(args: argparse.Namespace) -> int:
 
 def cmd_doctor(args: argparse.Namespace) -> int:
     """Check memory system health."""
-    from claude_memory.project import find_project_root, get_auto_memory_dir
-    from claude_memory.config import load_config, CONFIG_PATH
+    from anamnesis.project import find_project_root, get_auto_memory_dir
+    from anamnesis.config import load_config, CONFIG_PATH
 
     project_dir = Path(args.project_dir) if args.project_dir else None
 
@@ -104,7 +104,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         else:
             ok.append(f"Config: {CONFIG_PATH} is valid")
     else:
-        warnings.append(f"Config: {CONFIG_PATH} not found (run 'claude-memory init')")
+        warnings.append(f"Config: {CONFIG_PATH} not found (run 'anamnesis init')")
 
     # Check .claude directory
     claude_dir = project_dir / ".claude"
@@ -114,18 +114,18 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         ok.append(f".claude/ directory exists")
 
     # Check version file
-    version_file = claude_dir / ".claude-memory-version"
+    version_file = claude_dir / ".anamnesis-version"
     if version_file.exists():
         installed_version = version_file.read_text().strip()
         if installed_version != __version__:
             warnings.append(
                 f"Installed version ({installed_version}) differs from "
-                f"current ({__version__}). Run 'claude-memory update'."
+                f"current ({__version__}). Run 'anamnesis update'."
             )
         else:
             ok.append(f"Version: {installed_version}")
     else:
-        warnings.append("No version file found (run 'claude-memory init')")
+        warnings.append("No version file found (run 'anamnesis init')")
 
     # Check memory directory and key files
     memory_dir = claude_dir / "memory"
@@ -170,7 +170,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         warnings.append("rules/ directory not found under .claude/")
 
     # Print results
-    print(f"claude-memory doctor ({project_dir})")
+    print(f"anamnesis doctor ({project_dir})")
     print("=" * 50)
 
     if ok:
@@ -196,7 +196,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="claude-memory",
+        prog="anamnesis",
         description="Persistent, human-curated memory for Claude Code",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -204,7 +204,7 @@ def main(argv: list[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="command")
 
     # init
-    init_parser = subparsers.add_parser("init", help="Initialize claude-memory in a project")
+    init_parser = subparsers.add_parser("init", help="Initialize anamnesis in a project")
     init_parser.add_argument("--project-dir", help="Project directory (default: auto-detect git root)")
 
     # update

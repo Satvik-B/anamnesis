@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest in contributing to claude-memory.
+Thank you for your interest in contributing to anamnesis.
 
 ## Development Setup
 
@@ -12,8 +12,8 @@ Thank you for your interest in contributing to claude-memory.
 ### Clone and Install
 
 ```bash
-git clone https://github.com/anthropics/claude-memory.git
-cd claude-memory
+git clone https://github.com/anthropics/anamnesis.git
+cd anamnesis
 python -m venv .venv
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -e ".[dev]"
@@ -28,19 +28,19 @@ pytest
 With coverage:
 
 ```bash
-pytest --cov=claude_memory --cov-report=html
+pytest --cov=anamnesis --cov-report=html
 ```
 
 ## Project Structure
 
 ```
-claude-memory/
-  src/claude_memory/      # Python package
+anamnesis/
+  src/anamnesis/      # Python package
     __init__.py           # Version
     cli.py                # CLI entry point
-    init_cmd.py           # `claude-memory init` implementation
-    sync_cmd.py           # `claude-memory sync` implementation
-    compact_cmd.py        # `claude-memory compact` implementation
+    init_cmd.py           # `anamnesis init` implementation
+    sync_cmd.py           # `anamnesis sync` implementation
+    compact_cmd.py        # `anamnesis compact` implementation
     platform.py           # OS detection utilities
   skeleton/               # Template files copied by `init`
     rules/
@@ -131,5 +131,5 @@ tools better.
 
 ## License
 
-By contributing to claude-memory, you agree that your contributions will be
+By contributing to anamnesis, you agree that your contributions will be
 licensed under the MIT License.

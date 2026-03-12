@@ -39,7 +39,7 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Run tests with coverage
-        run: pytest --cov=claude_memory --cov-report=term-missing -v
+        run: pytest --cov=anamnesis --cov-report=term-missing -v
 
   lint:
     runs-on: ubuntu-latest
@@ -56,4 +56,4 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Check import sorting
-        run: python -m py_compile src/claude_memory/__init__.py
+        run: python -m py_compile src/anamnesis/__init__.py

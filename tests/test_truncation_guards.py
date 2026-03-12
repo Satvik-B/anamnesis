@@ -33,7 +33,7 @@ class TestMemoryMdLimits:
 
         # If the truncation module exists, use it
         try:
-            from claude_memory.truncation import check_file_limits
+            from anamnesis.truncation import check_file_limits
             issues = check_file_limits(big_file, max_lines=MEMORY_MD_LIMIT)
             assert len(issues) > 0
         except ImportError:
@@ -72,7 +72,7 @@ class TestFileSizeLimits:
         assert len(lines) > FILE_LIMIT
 
         try:
-            from claude_memory.truncation import check_file_limits
+            from anamnesis.truncation import check_file_limits
             issues = check_file_limits(big_file, max_lines=FILE_LIMIT)
             assert len(issues) > 0
         except ImportError:

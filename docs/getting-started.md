@@ -1,23 +1,23 @@
 # Getting Started
 
-A step-by-step guide to setting up claude-memory in your project.
+A step-by-step guide to setting up anamnesis in your project.
 
 ## Prerequisites
 
 - Python 3.9 or later
-- A project directory (any language -- claude-memory is language-agnostic)
+- A project directory (any language -- anamnesis is language-agnostic)
 - [Claude Code](https://claude.ai/code) installed and working
 
 ## Installation
 
 ```bash
-pip install claude-memory
+pip install anamnesis
 ```
 
 Verify the installation:
 
 ```bash
-claude-memory --version
+anamnesis --version
 ```
 
 ## Initialize Memory
@@ -26,7 +26,7 @@ Navigate to your project root and run:
 
 ```bash
 cd your-project
-claude-memory init
+anamnesis init
 ```
 
 This creates the following structure:
@@ -106,7 +106,7 @@ your curated memory.
 To merge them in:
 
 ```bash
-claude-memory sync
+anamnesis sync
 ```
 
 This will:
@@ -120,7 +120,7 @@ This will:
 Over time, memories accumulate. Run compaction periodically:
 
 ```bash
-claude-memory compact
+anamnesis compact
 ```
 
 This deduplicates entries, flags oversized files, and suggests archiving
@@ -132,7 +132,7 @@ The `.claude/memory/` directory is designed to be committed to git:
 
 ```bash
 git add .claude/
-git commit -m "Initialize claude-memory system"
+git commit -m "Initialize anamnesis system"
 ```
 
 This means:

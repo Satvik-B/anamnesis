@@ -3,7 +3,7 @@
 
 Usage: format-calendar.py <input.json> <output.md> <sync_time> [timezone]
   timezone: IANA timezone name (e.g. "Asia/Kolkata"). Default: UTC.
-            Also reads from ~/.claude-memory.yaml if not provided.
+            Also reads from ~/.anamnesis.yaml if not provided.
 """
 import json
 import sys
@@ -12,8 +12,8 @@ from datetime import datetime, timezone, timedelta
 
 
 def load_config_timezone():
-    """Read timezone from ~/.claude-memory.yaml, fallback to UTC."""
-    config_path = os.path.expanduser("~/.claude-memory.yaml")
+    """Read timezone from ~/.anamnesis.yaml, fallback to UTC."""
+    config_path = os.path.expanduser("~/.anamnesis.yaml")
     if os.path.exists(config_path):
         try:
             import yaml

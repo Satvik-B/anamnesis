@@ -1,6 +1,6 @@
-"""Configuration management for claude-memory.
+"""Configuration management for anamnesis.
 
-Reads and writes ~/.claude-memory.yaml.
+Reads and writes ~/.anamnesis.yaml.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import Any
 import yaml
 
 
-CONFIG_PATH = Path.home() / ".claude-memory.yaml"
+CONFIG_PATH = Path.home() / ".anamnesis.yaml"
 
 # Modules that can be enabled
 AVAILABLE_MODULES = [
@@ -93,7 +93,7 @@ def save_config(config: Config, path: Path | None = None) -> None:
 
 def collect_config_interactive() -> Config:
     """Prompt the user for configuration values interactively."""
-    print("claude-memory setup")
+    print("anamnesis setup")
     print("=" * 40)
     print()
 

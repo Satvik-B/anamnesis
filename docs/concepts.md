@@ -1,6 +1,6 @@
 # Concepts
 
-Core concepts behind the claude-memory system.
+Core concepts behind the anamnesis system.
 
 ## Memory Tiers
 
@@ -122,7 +122,7 @@ context that would be lost otherwise.
 Memories can be created in three ways:
 1. **Directly:** Tell Claude "remember that..." or create a file manually
 2. **After procedures:** Claude offers to save successful multi-step procedures
-3. **Via sync:** `claude-memory sync` imports auto-memories from sessions
+3. **Via sync:** `anamnesis sync` imports auto-memories from sessions
 
 ### Usage
 

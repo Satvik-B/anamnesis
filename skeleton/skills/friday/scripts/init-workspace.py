@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the friday workspace from ~/.claude-memory.yaml.
+"""Generate the friday workspace from ~/.anamnesis.yaml.
 
 Reads config to determine enabled modules, then creates workspace files
 at <repo-root>/friday/. Skips files that already exist unless --force is passed.
@@ -18,7 +18,7 @@ import yaml
 from datetime import datetime, timedelta
 from pathlib import Path
 
-CONFIG_PATH = os.path.expanduser("~/.claude-memory.yaml")
+CONFIG_PATH = os.path.expanduser("~/.anamnesis.yaml")
 
 
 def load_config():

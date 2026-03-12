@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug in claude-memory
+about: Report a bug in anamnesis
 title: "[Bug] "
 labels: bug
 assignees: ""
@@ -12,7 +12,7 @@ A clear description of the bug.
 
 ## Steps to Reproduce
 
-1. Run `claude-memory init` in a project
+1. Run `anamnesis init` in a project
 2. ...
 3. See error
 
@@ -28,7 +28,7 @@ What actually happened. Include error messages or logs if available.
 
 - OS: [e.g., macOS 14.0, Ubuntu 22.04]
 - Python version: [e.g., 3.12]
-- claude-memory version: [e.g., 1.0.0]
+- anamnesis version: [e.g., 1.0.0]
 - Claude Code version: [if relevant]
 
 ## Additional Context

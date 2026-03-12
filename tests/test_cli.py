@@ -1,4 +1,4 @@
-"""Tests for the claude-memory CLI."""
+"""Tests for the anamnesis CLI."""
 
 import subprocess
 import sys
@@ -8,15 +8,15 @@ from unittest import mock
 
 import pytest
 
-from claude_memory.cli import main, cmd_doctor
+from anamnesis.cli import main, cmd_doctor
 
 
 class TestCLIInit:
-    """Tests for `claude-memory init`."""
+    """Tests for `anamnesis init`."""
 
     def test_init_fresh_project(self, tmp_project, sample_config):
         """Running init on a fresh git repo should create .claude/ structure."""
-        from claude_memory.installer import install
+        from anamnesis.installer import install
 
         try:
             install(tmp_project, sample_config)
@@ -37,7 +37,7 @@ class TestCLIInit:
         user_file.parent.mkdir(parents=True, exist_ok=True)
         user_file.write_text("# My Notes\nImportant stuff.\n")
 
-        from claude_memory.installer import install
+        from anamnesis.installer import install
 
         try:
             install(installed_project, sample_config)
@@ -50,7 +50,7 @@ class TestCLIInit:
 
     def test_init_creates_directories(self, tmp_project, sample_config):
         """Init should create the full directory tree."""
-        from claude_memory.installer import install
+        from anamnesis.installer import install
 
         try:
             install(tmp_project, sample_config)
@@ -64,7 +64,7 @@ class TestCLIInit:
 
 
 class TestCLIUpdate:
-    """Tests for `claude-memory update`."""
+    """Tests for `anamnesis update`."""
 
     def test_update_preserves_user_data(self, installed_project):
         """Update should replace managed files but preserve user-created files."""
@@ -83,7 +83,7 @@ class TestCLIUpdate:
             These should survive an update.
         """))
 
-        from claude_memory.installer import update
+        from anamnesis.installer import update
 
         try:
             update(installed_project)
@@ -96,7 +96,7 @@ class TestCLIUpdate:
 
 
 class TestCLIDoctor:
-    """Tests for `claude-memory doctor`."""
+    """Tests for `anamnesis doctor`."""
 
     def test_doctor_reports_missing_claude_dir(self, tmp_project, capsys):
         """Doctor should report when .claude/ is missing."""
@@ -152,6 +152,6 @@ class TestCLIMain:
             main(["--version"])
         assert exc_info.value.code == 0
 
-        from claude_memory import __version__
+        from anamnesis import __version__
         captured = capsys.readouterr()
         assert __version__ in captured.out

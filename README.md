@@ -1,11 +1,11 @@
-# claude-memory
+# anamnesis
 
 Persistent, human-curated memory for Claude Code.
 
-[![PyPI version](https://img.shields.io/pypi/v/claude-memory)](https://pypi.org/project/claude-memory/)
-[![CI](https://img.shields.io/github/actions/workflow/status/anthropics/claude-memory/ci.yml?branch=main&label=CI)](https://github.com/anthropics/claude-memory/actions)
+[![PyPI version](https://img.shields.io/pypi/v/anamnesis)](https://pypi.org/project/anamnesis/)
+[![CI](https://img.shields.io/github/actions/workflow/status/anthropics/anamnesis/ci.yml?branch=main&label=CI)](https://github.com/anthropics/anamnesis/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Downloads](https://img.shields.io/pypi/dm/claude-memory)](https://pypi.org/project/claude-memory/)
+[![Downloads](https://img.shields.io/pypi/dm/anamnesis)](https://pypi.org/project/anamnesis/)
 
 ---
 
@@ -23,7 +23,7 @@ This means:
 
 ## The Solution
 
-**claude-memory** gives your Claude Code agent persistent, file-based memory
+**anamnesis** gives your Claude Code agent persistent, file-based memory
 that survives across sessions. It's:
 
 - **Human-curated** -- you control what gets remembered, not an opaque embedding store
@@ -34,12 +34,12 @@ that survives across sessions. It's:
 ## Quick Start (5 minutes)
 
 ```bash
-pip install claude-memory
+pip install anamnesis
 cd your-project
-claude-memory init
+anamnesis init
 ```
 
-That's it. `claude-memory init` creates a `.claude/` directory in your project with:
+That's it. `anamnesis init` creates a `.claude/` directory in your project with:
 
 ```
 .claude/
@@ -100,8 +100,8 @@ Individual memory files are read on demand.
 ## Features
 
 - **Two-tier memory** -- hot index for always-on context, cold index for deep knowledge
-- **Session sync** -- `claude-memory sync` merges auto-memories into your curated system
-- **Note compaction** -- `claude-memory compact` deduplicates and consolidates memories
+- **Session sync** -- `anamnesis sync` merges auto-memories into your curated system
+- **Note compaction** -- `anamnesis compact` deduplicates and consolidates memories
 - **Sprint tracking** -- optional Friday morning check-in skill surfaces what matters
 - **Human-curated** -- memories are plain Markdown; edit them with any tool
 - **Git-friendly** -- memory files live in your repo and version naturally
@@ -136,10 +136,10 @@ directory and team members benefit from shared knowledge.
 **Q: What if MEMORY.md gets too long?**
 The 200-line hard cap is enforced by Claude's context window. The memory rule
 instructs Claude to consolidate aggressively. You can also run
-`claude-memory compact` to automatically deduplicate and trim.
+`anamnesis compact` to automatically deduplicate and trim.
 
 **Q: How is this different from RAG or vector stores?**
-claude-memory is deliberately simple: plain text files, human-readable, human-editable.
+anamnesis is deliberately simple: plain text files, human-readable, human-editable.
 No embeddings, no databases, no retrieval pipelines. You see exactly what Claude
 remembers and can change it with a text editor.
 

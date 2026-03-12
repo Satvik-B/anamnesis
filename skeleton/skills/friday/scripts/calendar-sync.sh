@@ -1,7 +1,7 @@
 #!/bin/bash
 # Calendar Sync — Fetches Google Calendar events via direct API, formats into calendar.md.
 #
-# Reads config from ~/.claude-memory.yaml for timezone and workspace path.
+# Reads config from ~/.anamnesis.yaml for timezone and workspace path.
 # Uses OAuth token from ~/.gcalendar-mcp-token.json with automatic refresh.
 #
 # Usage:
@@ -47,7 +47,7 @@ TEMP_OUTPUT="/tmp/calendar-sync-output.md"
 
 # --- Read timezone from config ---
 read_config_timezone() {
-    local config="$HOME/.claude-memory.yaml"
+    local config="$HOME/.anamnesis.yaml"
     if [ -f "$config" ]; then
         python3 -c "
 import yaml, sys

@@ -2,7 +2,7 @@
 
 ## General
 
-### What is claude-memory?
+### What is anamnesis?
 
 A tool that gives Claude Code persistent, file-based memory across sessions.
 Instead of starting from zero every time, Claude remembers who you are, what
@@ -16,17 +16,17 @@ never leave your machine (unless you git push them).
 
 ### What languages/frameworks does this work with?
 
-All of them. claude-memory is language-agnostic. It works with any project
+All of them. anamnesis is language-agnostic. It works with any project
 that uses Claude Code, regardless of tech stack.
 
 ### Do I need to pay for anything?
 
-No. claude-memory is free and open source under the MIT license. You do need
+No. anamnesis is free and open source under the MIT license. You do need
 a Claude Code subscription, but that's separate.
 
 ## Setup
 
-### What does `claude-memory init` actually do?
+### What does `anamnesis init` actually do?
 
 It creates a `.claude/` directory in your project with:
 - A rule file that teaches Claude how to use the memory system
@@ -38,12 +38,12 @@ missing files.
 
 ### Can I use this alongside an existing `.claude/` directory?
 
-Yes. `claude-memory init` is additive. It won't overwrite existing rule files
+Yes. `anamnesis init` is additive. It won't overwrite existing rule files
 or settings. It creates only the memory-specific files that don't already exist.
 
 ### Does this work on Windows?
 
-Yes. claude-memory detects your OS and uses the appropriate paths. The memory
+Yes. anamnesis detects your OS and uses the appropriate paths. The memory
 files themselves are plain Markdown and work on any platform.
 
 ## Usage
@@ -58,7 +58,7 @@ memory files are only read when Claude determines they're relevant.
 
 Lines beyond 200 are silently truncated -- Claude never sees them. The memory
 rule instructs Claude to consolidate aggressively and refuse to append when
-near the limit. You can also run `claude-memory compact` to trim manually.
+near the limit. You can also run `anamnesis compact` to trim manually.
 
 ### How do I delete a memory?
 
@@ -78,13 +78,13 @@ Yes, with your permission. The memory rule instructs Claude to:
 
 You always have the final say on what gets saved.
 
-### How often should I run `claude-memory sync`?
+### How often should I run `anamnesis sync`?
 
 After intensive work sessions where Claude learned a lot about your project.
 Weekly or biweekly is typical. You don't need to sync after every session --
 most auto-memories are ephemeral and not worth curating.
 
-### How often should I run `claude-memory compact`?
+### How often should I run `anamnesis compact`?
 
 Monthly is a good cadence, or whenever you notice MEMORY.md or INDEX.md
 getting long. Compaction deduplicates entries, flags oversized files, and
@@ -109,7 +109,7 @@ and a larger long-term store (cold tier) for everything else.
 
 ### How is this different from RAG or vector stores?
 
-claude-memory is deliberately simple:
+anamnesis is deliberately simple:
 - No embeddings or vector databases
 - No retrieval pipelines or similarity search
 - No infrastructure to maintain

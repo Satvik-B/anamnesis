@@ -1,5 +1,5 @@
-# Claude Memory Configuration
-# Copy to ~/.claude-memory.yaml and customize.
+# Anamnesis Configuration
+# Copy to ~/.anamnesis.yaml and customize.
 
 identity:
   name: "Your Name"
