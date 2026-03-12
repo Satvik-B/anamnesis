@@ -1,0 +1,81 @@
+# Claude Memory Configuration
+# Copy to ~/.claude-memory.yaml and customize.
+
+identity:
+  name: "Your Name"
+  email: "you@company.com"                          # required
+  assistant_name: "Friday"                          # how the assistant refers to itself
+
+# Feature modules (all opt-in)
+modules:
+  sprint_tracking: true       # 2-week sprint cycles, task tracking, delivery metrics
+  daily_rituals: true         # morning/evening check-in (adapts to enabled modules)
+  calendar: false             # Google Calendar sync, meeting prep, time blocking
+  slack: false                # search sent/tagged messages, surface action items
+  jira: false                 # JIRA issue tracking, JQL queries
+  github_reviews: false       # PR review backlog, priority queue, re-review detection
+  personal: false             # gym, errands, personal life tracker
+  statusline: false           # live 2-line display at bottom of Claude Code
+  journal: false              # freeform journal entries
+  ideas: false                # idea bank for loose thoughts
+
+# --- Module-specific config (only needed if module is enabled) ---
+
+# Calendar module
+calendar:
+  timezone: "UTC"                                   # IANA timezone (e.g. "America/Los_Angeles")
+  cron_enabled: false                               # install hourly cron for calendar sync
+  cron_hours: "9-18"                                # cron hours range
+  cron_days: "1-5"                                  # cron days (1=Mon, 5=Fri)
+
+# Slack module
+slack:
+  user_id: ""                                       # Slack member ID (Profile → ... → Copy member ID)
+  display_name: ""                                  # Slack display name
+
+# JIRA module
+jira:
+  components: []                                    # e.g. ["Backend", "API Gateway"]
+
+# GitHub Reviews module
+github_reviews:
+  github_username: ""                               # your GitHub username
+  team_members: []                                  # teammates (for priority scoring)
+
+# Personal module
+personal:
+  gym_days: []                                      # e.g. ["Monday", "Wednesday", "Friday"]
+
+# Schedule (used by statusline location + daily rituals)
+schedule:
+  timezone: "UTC"                                   # IANA timezone
+  wfh_days: []                                      # e.g. ["Monday", "Wednesday", "Friday"]
+  office_days: []                                   # e.g. ["Tuesday", "Thursday"]
+  sprint_length_weeks: 2
+  sprint_start_day: "Monday"
+
+# Work context
+work:
+  team: ""                                          # e.g. "Backend Platform"
+  manager: ""                                       # e.g. "Jane Smith"
+
+# Statusline module
+statusline:
+  components:
+    session_info: true                              # [model] context% | $cost (always on)
+    sprint_progress: true                           # Day 7/10 (requires sprint_tracking)
+    next_meeting: true                              # Meeting @ 10:00 (requires calendar)
+    active_task: true                               # #4 Task name (requires sprint_tracking)
+    oncall: true                                    # Oncall (from sprint file)
+    release_countdown: true                         # v2.1 FC 14d (from references.md)
+    git_branch: true                                # branch name (skips main/master)
+    location: true                                  # WFH / Office (from schedule)
+    gym: true                                       # Gym check (requires personal)
+  release_label: ""                                 # e.g. "v2.1 FC"
+  oncall_keywords:                                  # keywords to detect oncall from sprint file
+    - "oncall"
+  skip_events:                                      # event names to skip in next_meeting
+    - "Focus time"
+    - "Focus block"
+    - "Lunch"
+    - "Break"
