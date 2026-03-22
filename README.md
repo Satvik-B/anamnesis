@@ -3,7 +3,7 @@
 Persistent, human-curated memory for Claude Code.
 
 [![PyPI version](https://img.shields.io/pypi/v/anamnesis)](https://pypi.org/project/anamnesis/)
-[![CI](https://img.shields.io/github/actions/workflow/status/anthropics/anamnesis/ci.yml?branch=main&label=CI)](https://github.com/anthropics/anamnesis/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/Satvik-B/anamnesis/ci.yml?branch=master&label=CI)](https://github.com/Satvik-B/anamnesis/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Downloads](https://img.shields.io/pypi/dm/anamnesis)](https://pypi.org/project/anamnesis/)
 
