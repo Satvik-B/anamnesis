@@ -62,7 +62,7 @@ Create these directories if missing:
 .claude/memory/tasks/
 .claude/memory/reflections/
 .claude/memory/archive/
-.claude/memory/slack/
+.claude/memory/conversations/
 ```
 
 ### Step 4: Create INDEX.md if missing
@@ -110,7 +110,7 @@ Only if `.claude/memory/INDEX.md` does NOT exist, create it with empty tables:
 
 ---
 
-## Slack Conversations
+## Conversations
 
 | Project | File | Date | Topic |
 |---------|------|------|-------|
@@ -127,9 +127,12 @@ Stale memories (>90 days without access) move to `archive/YYYY-MM/`.
 If `rule_file` does not exist, copy it from the skeleton.
 
 If it exists, check if it was user-modified (compare against skeleton version):
-- If modified and NOT in auto mode: ask "memory-rule.md has been customized. Overwrite with latest? (Backup at .claude.anamnesis-backup-*/)"
-- If modified and in auto mode: overwrite silently
+- If modified: ask "memory-rule.md has been customized. Overwrite with latest? (Backup at .claude.anamnesis-backup-*/)"
+  - In AUTO_MODE: overwrite without asking
 - If unmodified: overwrite silently
+
+Note: The backup in Step 2 **always** runs before any changes, so the user can
+always recover their previous state regardless of what happens here.
 
 ### Step 6: Auto-memory import
 
@@ -262,7 +265,7 @@ Read-only health check of the memory system.
 2. **INDEX.md line count** vs 150 soft cap
 
 3. **Memory counts by type** — count `.md` files in each subdirectory:
-   knowledge/, tasks/, contexts/, reflections/, slack/, archive/
+   knowledge/, tasks/, contexts/, reflections/, conversations/, archive/
 
 4. **Stale memories** — scan for `last_accessed:` in frontmatter, flag >30 days
 
@@ -291,7 +294,7 @@ Memory Inventory:
   tasks/        3 files
   contexts/     4 files
   reflections/  2 files
-  slack/        1 file
+  conversations/ 1 file
   archive/      0 files
   ─────────────────────
   Total:       18 memories
@@ -337,7 +340,7 @@ references:
 ├── tasks/                 # Procedural runbooks ("how to X")
 ├── contexts/              # Project state snapshots
 ├── reflections/           # Lessons learned, mistakes
-├── slack/                 # Conversation summaries
+├── conversations/         # Conversation summaries (Slack, meetings, etc.)
 └── archive/               # Stale memories (>90 days)
 ```
 
