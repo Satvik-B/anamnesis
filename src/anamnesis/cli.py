@@ -11,11 +11,12 @@ from anamnesis import __version__
 
 def cmd_init(args: argparse.Namespace) -> int:
     """Initialize anamnesis in the current (or specified) project."""
-    from anamnesis.config import collect_config_interactive, save_config, load_config
-    from anamnesis.installer import install
+    from anamnesis.config import collect_config_interactive, save_config, load_config, CONFIG_PATH
+    from anamnesis.installer import install, backup_claude_dir
     from anamnesis.project import find_project_root
 
     project_dir = Path(args.project_dir) if args.project_dir else None
+    auto = getattr(args, "auto", False)
 
     if project_dir is None:
         project_dir = find_project_root()
@@ -26,11 +27,20 @@ def cmd_init(args: argparse.Namespace) -> int:
     print(f"Initializing anamnesis in: {project_dir}")
     print()
 
+    # Backup existing .claude/ directory
+    backup_path = backup_claude_dir(project_dir)
+    if backup_path:
+        print(f"Backed up .claude/ to {backup_path.name}/")
+        print()
+
     # Collect or load config
-    config = collect_config_interactive()
-    save_config(config)
-    print()
-    print(f"Config saved to: ~/.anamnesis.yaml")
+    if auto and CONFIG_PATH.exists():
+        config = load_config()
+        print(f"Using existing config from: {CONFIG_PATH}")
+    else:
+        config = collect_config_interactive()
+        save_config(config)
+        print(f"Config saved to: {CONFIG_PATH}")
     print()
 
     # Install skeleton files
@@ -44,6 +54,8 @@ def cmd_init(args: argparse.Namespace) -> int:
 
     print()
     print("Done! Claude Code will pick up the new memory system on next conversation.")
+    if auto:
+        print("(Auto mode: interactive prompts were skipped)")
     return 0
 
 
@@ -206,6 +218,7 @@ def main(argv: list[str] | None = None) -> int:
     # init
     init_parser = subparsers.add_parser("init", help="Initialize anamnesis in a project")
     init_parser.add_argument("--project-dir", help="Project directory (default: auto-detect git root)")
+    init_parser.add_argument("--auto", action="store_true", help="Skip interactive prompts during init")
 
     # update
     update_parser = subparsers.add_parser("update", help="Update rules/skills without touching user data")

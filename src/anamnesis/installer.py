@@ -86,6 +86,23 @@ def _is_user_data(rel_path: str) -> bool:
     return False
 
 
+def backup_claude_dir(project_dir: Path) -> Path | None:
+    """Back up .claude/ to .claude.anamnesis-backup-<timestamp>/ before changes.
+
+    Returns the backup path if a backup was created, None if .claude/ didn't exist.
+    """
+    from datetime import datetime
+
+    claude_dir = project_dir / ".claude"
+    if not claude_dir.exists():
+        return None
+
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup_dir = project_dir / f".claude.anamnesis-backup-{timestamp}"
+    shutil.copytree(claude_dir, backup_dir)
+    return backup_dir
+
+
 def install(project_dir: Path, config: Config) -> list[str]:
     """Copy skeleton files into project_dir/.claude/, rendering templates.
 

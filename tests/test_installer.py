@@ -125,3 +125,26 @@ class TestInstallUpdate:
         updated, skipped = result
         assert isinstance(updated, list)
         assert isinstance(skipped, list)
+
+
+class TestBackup:
+    """Tests for the backup functionality."""
+
+    def test_backup_creates_copy(self, installed_project):
+        """backup_claude_dir should create a timestamped copy of .claude/."""
+        from anamnesis.installer import backup_claude_dir
+
+        backup_path = backup_claude_dir(installed_project)
+
+        assert backup_path is not None
+        assert backup_path.exists()
+        assert backup_path.name.startswith(".claude.anamnesis-backup-")
+        # Backup should contain the same structure
+        assert (backup_path / "rules").is_dir() or (backup_path / "memory").is_dir()
+
+    def test_backup_returns_none_when_no_claude_dir(self, tmp_project):
+        """backup_claude_dir should return None if .claude/ doesn't exist."""
+        from anamnesis.installer import backup_claude_dir
+
+        result = backup_claude_dir(tmp_project)
+        assert result is None
