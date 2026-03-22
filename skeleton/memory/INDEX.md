@@ -17,10 +17,7 @@
 
 | Task | File | Tags | Last Accessed |
 |------|------|------|---------------|
-| DB Schema Migration | tasks/db-schema-migration.md | db, migration, orm | YYYY-MM-DD |
-| Deploy Service | tasks/deploy-service.md | deploy, dev-cluster | YYYY-MM-DD |
-| Debug gRPC Errors | tasks/debug-grpc-errors.md | grpc, debug, timeout | YYYY-MM-DD |
-| _Add your runbooks here_ | | | |
+| _Add your runbooks here_ | tasks/your-task.md | tags | YYYY-MM-DD |
 
 ---
 
@@ -28,8 +25,7 @@
 
 | Topic | File | Tags | Status |
 |-------|------|------|--------|
-| Bazel Go Testing | knowledge/bazel-go-testing.md | bazel, go, test | Active |
-| _Add domain knowledge here_ | | | |
+| _Add domain knowledge here_ | knowledge/your-topic.md | tags | Active |
 
 ---
 
@@ -37,7 +33,7 @@
 
 | File | Content |
 |------|---------|
-| people/team-directory.md | Team members, roles, expertise areas |
+| _Add team members here_ | _Team members, roles, expertise areas_ |
 
 ---
 
@@ -45,9 +41,7 @@
 
 | File | Content |
 |------|---------|
-| reflections/mistakes.md | Things that went wrong and what was learned |
-| reflections/patterns.md | Recurring patterns observed across tasks |
-| reflections/decisions.md | Key technical decisions and rationale |
+| _Add reflections as you learn_ | _Mistakes, patterns, and decisions_ |
 
 ---
 
