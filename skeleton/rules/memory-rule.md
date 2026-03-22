@@ -57,6 +57,53 @@ memory file with tags and last-accessed date.
 
 ---
 
+## Continuous Memory Updates
+
+Claude writes directly to the Anamnesis memory structure on every conversation
+where something worth remembering is learned. No separate sync step is needed
+for daily use.
+
+### After every conversation where you learn something worth remembering:
+
+1. **Determine the memory type**:
+   - `knowledge` — facts, patterns, conventions, gotchas
+   - `task` — procedural runbooks ("how to do X")
+   - `context` — project state snapshots, active work
+   - `reflection` — lessons learned, mistakes, corrections
+   - `feedback` — user corrections about your behavior
+
+2. **Write directly** to `.claude/memory/<type>/<descriptive-name>.md`
+   using the standard frontmatter format (see "File Format for New Memories" below)
+
+3. **Update INDEX.md** — add a row to the matching table in `.claude/memory/INDEX.md`
+
+4. **Update MEMORY.md** — only if the memory is high-importance and needed in
+   >50% of conversations (see the Index Boundary Rule above)
+
+### When to prompt vs. auto-save:
+
+- **Auto-save without asking**: knowledge, reflections, feedback
+- **Ask first**: context-type memories (project snapshots) — these are larger
+  and the user should confirm the scope and framing
+- **Auto-save tasks**: only after the user confirms the procedure worked
+
+### References
+
+When a memory is created in the context of a specific JIRA ticket, PR, design
+doc, Slack thread, or other external resource, include it in the frontmatter:
+
+```yaml
+references:
+  - url: https://example.atlassian.net/browse/PROJ-123
+    label: JIRA ticket
+  - url: https://github.com/org/repo/pull/42
+    label: PR
+```
+
+This links memories to their source of truth for future verification.
+
+---
+
 ## Size Discipline: Truncation Guards
 
 The memory system has hard limits. Exceeding them causes **silent data loss** —
