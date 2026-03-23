@@ -325,11 +325,25 @@ last_accessed: YYYY-MM-DD
 access_count: 1
 importance: high | medium | low
 source: learned | manual | session | import
-references:
+references:                        # optional — links to source of truth
   - url: https://example.com
     label: Description
+chat_sessions:                     # optional — Claude Code sessions that worked on this
+  - id: abc123                     # session ID (use with `claude --resume <id>`)
+    date: YYYY-MM-DD
+    summary: Brief description of what was done
 ---
 ```
+
+The `chat_sessions` field is optional but encouraged for **context-type memories**
+(project snapshots). It links a memory to the Claude Code sessions that created or
+updated it, enabling quick resume via `claude --resume <id>`.
+
+Guidelines:
+- Auto-populate when creating/updating a context memory (the current session ID
+  is available in the conversation)
+- Keep the last 5-10 sessions — older ones lose their context window
+- Always include a one-line `summary` so the list is scannable without resuming
 
 ## Directory Layout
 
