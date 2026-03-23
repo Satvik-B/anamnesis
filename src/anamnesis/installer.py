@@ -86,6 +86,61 @@ def _is_user_data(rel_path: str) -> bool:
     return False
 
 
+def backup_claude_dir(project_dir: Path) -> Path | None:
+    """Back up .claude/ to .claude.anamnesis-backup-<timestamp>/ before changes.
+
+    Returns the backup path if a backup was created, None if .claude/ didn't exist.
+    """
+    from datetime import datetime
+
+    claude_dir = project_dir / ".claude"
+    if not claude_dir.exists():
+        return None
+
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup_dir = project_dir / f".claude.anamnesis-backup-{timestamp}"
+    shutil.copytree(claude_dir, backup_dir)
+    return backup_dir
+
+
+# How old a backup must be before automatic cleanup (days)
+BACKUP_MAX_AGE_DAYS = 30
+
+
+def cleanup_stale_backups(project_dir: Path) -> list[Path]:
+    """Remove .claude.anamnesis-backup-* directories older than BACKUP_MAX_AGE_DAYS.
+
+    Returns a list of removed backup paths.
+    """
+    import re
+    from datetime import datetime, timedelta
+
+    cutoff = datetime.now() - timedelta(days=BACKUP_MAX_AGE_DAYS)
+    removed: list[Path] = []
+
+    for entry in sorted(project_dir.iterdir()):
+        if not entry.is_dir():
+            continue
+        if not entry.name.startswith(".claude.anamnesis-backup-"):
+            continue
+
+        # Extract timestamp from directory name: .claude.anamnesis-backup-YYYYMMDD-HHMMSS
+        match = re.search(r"(\d{8}-\d{6})$", entry.name)
+        if not match:
+            continue
+
+        try:
+            backup_time = datetime.strptime(match.group(1), "%Y%m%d-%H%M%S")
+        except ValueError:
+            continue
+
+        if backup_time < cutoff:
+            shutil.rmtree(entry)
+            removed.append(entry)
+
+    return removed
+
+
 def install(project_dir: Path, config: Config) -> list[str]:
     """Copy skeleton files into project_dir/.claude/, rendering templates.
 

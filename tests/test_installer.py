@@ -125,3 +125,65 @@ class TestInstallUpdate:
         updated, skipped = result
         assert isinstance(updated, list)
         assert isinstance(skipped, list)
+
+
+class TestBackup:
+    """Tests for the backup functionality."""
+
+    def test_backup_creates_copy(self, installed_project):
+        """backup_claude_dir should create a timestamped copy of .claude/."""
+        from anamnesis.installer import backup_claude_dir
+
+        backup_path = backup_claude_dir(installed_project)
+
+        assert backup_path is not None
+        assert backup_path.exists()
+        assert backup_path.name.startswith(".claude.anamnesis-backup-")
+        # Backup should contain the same structure
+        assert (backup_path / "rules").is_dir() or (backup_path / "memory").is_dir()
+
+    def test_backup_returns_none_when_no_claude_dir(self, tmp_project):
+        """backup_claude_dir should return None if .claude/ doesn't exist."""
+        from anamnesis.installer import backup_claude_dir
+
+        result = backup_claude_dir(tmp_project)
+        assert result is None
+
+
+class TestCleanupStaleBackups:
+    """Tests for stale backup cleanup."""
+
+    def test_removes_old_backups(self, installed_project):
+        """Backups older than 30 days should be removed."""
+        from anamnesis.installer import cleanup_stale_backups
+
+        # Create a fake old backup (60 days ago)
+        old_backup = installed_project / ".claude.anamnesis-backup-20260122-100000"
+        old_backup.mkdir()
+        (old_backup / "marker.txt").write_text("old")
+
+        removed = cleanup_stale_backups(installed_project)
+
+        assert len(removed) == 1
+        assert removed[0] == old_backup
+        assert not old_backup.exists()
+
+    def test_keeps_recent_backups(self, installed_project):
+        """Backups newer than 30 days should be kept."""
+        from anamnesis.installer import cleanup_stale_backups, backup_claude_dir
+
+        # Create a fresh backup (now)
+        fresh_backup = backup_claude_dir(installed_project)
+        assert fresh_backup is not None
+
+        removed = cleanup_stale_backups(installed_project)
+
+        assert len(removed) == 0
+        assert fresh_backup.exists()
+
+    def test_no_backups_is_noop(self, installed_project):
+        """No backups present should return empty list."""
+        from anamnesis.installer import cleanup_stale_backups
+
+        removed = cleanup_stale_backups(installed_project)
+        assert removed == []
