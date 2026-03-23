@@ -148,3 +148,42 @@ class TestBackup:
 
         result = backup_claude_dir(tmp_project)
         assert result is None
+
+
+class TestCleanupStaleBackups:
+    """Tests for stale backup cleanup."""
+
+    def test_removes_old_backups(self, installed_project):
+        """Backups older than 30 days should be removed."""
+        from anamnesis.installer import cleanup_stale_backups
+
+        # Create a fake old backup (60 days ago)
+        old_backup = installed_project / ".claude.anamnesis-backup-20260122-100000"
+        old_backup.mkdir()
+        (old_backup / "marker.txt").write_text("old")
+
+        removed = cleanup_stale_backups(installed_project)
+
+        assert len(removed) == 1
+        assert removed[0] == old_backup
+        assert not old_backup.exists()
+
+    def test_keeps_recent_backups(self, installed_project):
+        """Backups newer than 30 days should be kept."""
+        from anamnesis.installer import cleanup_stale_backups, backup_claude_dir
+
+        # Create a fresh backup (now)
+        fresh_backup = backup_claude_dir(installed_project)
+        assert fresh_backup is not None
+
+        removed = cleanup_stale_backups(installed_project)
+
+        assert len(removed) == 0
+        assert fresh_backup.exists()
+
+    def test_no_backups_is_noop(self, installed_project):
+        """No backups present should return empty list."""
+        from anamnesis.installer import cleanup_stale_backups
+
+        removed = cleanup_stale_backups(installed_project)
+        assert removed == []

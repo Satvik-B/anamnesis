@@ -12,7 +12,7 @@ from anamnesis import __version__
 def cmd_init(args: argparse.Namespace) -> int:
     """Initialize anamnesis in the current (or specified) project."""
     from anamnesis.config import collect_config_interactive, save_config, load_config, CONFIG_PATH
-    from anamnesis.installer import install, backup_claude_dir
+    from anamnesis.installer import install, backup_claude_dir, cleanup_stale_backups
     from anamnesis.project import find_project_root
 
     project_dir = Path(args.project_dir) if args.project_dir else None
@@ -51,6 +51,13 @@ def cmd_init(args: argparse.Namespace) -> int:
             print(f"  .claude/{f}")
     else:
         print("All files already exist, nothing to create.")
+
+    # Clean up backups older than 30 days
+    removed = cleanup_stale_backups(project_dir)
+    if removed:
+        print(f"Cleaned up {len(removed)} stale backup(s) (>30 days old):")
+        for r in removed:
+            print(f"  {r.name}/")
 
     print()
     print("Done! Claude Code will pick up the new memory system on next conversation.")
