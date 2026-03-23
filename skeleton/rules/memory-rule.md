@@ -225,6 +225,13 @@ last_accessed: YYYY-MM-DD
 access_count: 1
 importance: high | medium | low
 source: learned | wiki | confluence | slack | manual
+references:                        # optional — links to source of truth
+  - url: https://example.com
+    label: Description
+chat_sessions:                     # optional — for context-type memories
+  - id: <session-id>               # resumable with `claude --resume <id>`
+    date: YYYY-MM-DD
+    summary: Brief description
 ---
 
 # Title
@@ -241,6 +248,16 @@ source: learned | wiki | confluence | slack | manual
 ## Links
 <relevant URLs>
 ```
+
+### Chat Sessions
+
+When creating or updating a **context-type** memory (project snapshot), record
+the current Claude Code session ID in the `chat_sessions` field. This lets users
+resume past sessions related to a project with `claude --resume <id>`.
+
+- Auto-add the current session when saving a context memory
+- Keep the last 5-10 entries — older sessions lose their context window
+- Always include a one-line `summary` so the list is scannable
 
 ## Slack → Memory Integration
 
