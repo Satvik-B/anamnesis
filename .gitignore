@@ -43,3 +43,6 @@ Thumbs.db
 
 # Temporary
 /tmp/
+
+# Local research (not for distribution)
+research/
