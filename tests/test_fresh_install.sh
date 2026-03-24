@@ -43,16 +43,13 @@ source "$VENV/bin/activate"
 
 # --- Install ---
 echo "2. Installing anamnesis..."
-# Install in editable mode so the skeleton directory is found at the repo root.
-# Non-editable installs have a known packaging issue (skeleton not bundled as
-# package data) tracked for future fix.
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 if [[ "${1:-}" == "--from-git" ]]; then
-    log_info "Installing from GitHub (editable): $REPO_URL"
-    pip install -e "git+$REPO_URL#egg=anamnesis" --quiet 2>&1
+    log_info "Installing from GitHub: $REPO_URL"
+    pip install "git+$REPO_URL" --quiet 2>&1
 else
-    log_info "Installing from local (editable): $SCRIPT_DIR"
-    pip install -e "$SCRIPT_DIR" --quiet 2>&1
+    log_info "Installing from local: $SCRIPT_DIR"
+    pip install "$SCRIPT_DIR" --quiet 2>&1
 fi
 
 # --- Check CLI is available ---
