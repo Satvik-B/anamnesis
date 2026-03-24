@@ -29,18 +29,16 @@ USER_DATA_GLOBS = [
 def _skeleton_root() -> Path:
     """Return the path to the skeleton/ directory bundled with this package.
 
-    For editable/dev installs, the skeleton lives at the repo root (../../../skeleton
-    relative to this file). For installed packages, it would be bundled as package data.
+    The skeleton lives at src/anamnesis/skeleton/ (sibling to this file),
+    which works for both editable and non-editable installs.
     """
-    # 1. Check relative to this source file (editable install / dev checkout)
+    # 1. Check sibling directory (works for both editable and installed packages)
     this_file = Path(__file__).resolve()
-    # src/anamnesis/installer.py -> repo root is 3 levels up
-    repo_root = this_file.parent.parent.parent
-    dev_skeleton = repo_root / "skeleton"
-    if dev_skeleton.is_dir():
-        return dev_skeleton
+    sibling_skeleton = this_file.parent / "skeleton"
+    if sibling_skeleton.is_dir():
+        return sibling_skeleton
 
-    # 2. importlib.resources for installed packages
+    # 2. importlib.resources fallback
     try:
         ref = importlib.resources.files("anamnesis") / "skeleton"
         if hasattr(ref, "_path"):
@@ -55,7 +53,7 @@ def _skeleton_root() -> Path:
 
     raise FileNotFoundError(
         "Skeleton directory not found. Checked:\n"
-        f"  - {dev_skeleton}\n"
+        f"  - {sibling_skeleton}\n"
         "  - importlib.resources (package data)"
     )
 

@@ -43,5 +43,8 @@ where = ["src"]
 [tool.setuptools.package-data]
 anamnesis = ["skeleton/**/*"]
 
+[tool.setuptools.exclude-package-data]
+anamnesis = ["**/__pycache__/**", "**/*.pyc"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
