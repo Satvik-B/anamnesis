@@ -46,3 +46,9 @@ Thumbs.db
 
 # Local research (not for distribution)
 research/
+
+# MemoryBench runtime files (results are local)
+eval/results.tsv
+eval/history/
+eval/current_rule.md
+eval/proposed_rule.md

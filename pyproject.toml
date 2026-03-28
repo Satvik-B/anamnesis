@@ -36,6 +36,9 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
 ]
+eval = [
+    "anthropic>=0.40.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
