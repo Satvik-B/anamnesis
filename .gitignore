@@ -30,6 +30,10 @@ htmlcov/
 *.swo
 *~
 
+# Claude Code
+.claude/
+.claude.anamnesis-backup-*/
+
 # OS
 .DS_Store
 Thumbs.db

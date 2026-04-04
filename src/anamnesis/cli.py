@@ -96,6 +96,88 @@ def cmd_update(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_sync(args: argparse.Namespace) -> int:
+    """List unprocessed sessions and optionally run basic extraction."""
+    from anamnesis.project import find_project_root
+    from anamnesis.sync import list_sessions, list_unprocessed, content_hash
+
+    project_dir = Path(args.project_dir) if args.project_dir else None
+    if project_dir is None:
+        project_dir = find_project_root()
+    if project_dir is None:
+        print("Error: not inside a git repository.", file=sys.stderr)
+        return 1
+
+    memory_dir = project_dir / ".claude" / "memory"
+
+    all_sessions = list_sessions(project_dir)
+    unprocessed = list_unprocessed(project_dir, memory_dir)
+
+    print(f"Sessions found: {len(all_sessions)} total, {len(unprocessed)} unprocessed")
+    print()
+
+    if not unprocessed:
+        print("All sessions have been processed. Nothing to sync.")
+        return 0
+
+    for s in unprocessed:
+        size_kb = s.size_bytes / 1024
+        print(f"  {s.session_id}  ({size_kb:.1f} KB)")
+
+    print()
+    print("To sync these sessions, run /memory sync inside Claude Code.")
+    print("Claude will read each session and extract memories for your approval.")
+    return 0
+
+
+def cmd_compact(args: argparse.Namespace) -> int:
+    """Report duplicate and stale memories."""
+    from anamnesis.project import find_project_root
+    from anamnesis.compact import compact_report
+
+    project_dir = Path(args.project_dir) if args.project_dir else None
+    if project_dir is None:
+        project_dir = find_project_root()
+    if project_dir is None:
+        print("Error: not inside a git repository.", file=sys.stderr)
+        return 1
+
+    memory_dir = project_dir / ".claude" / "memory"
+    if not memory_dir.exists():
+        print("No memory directory found. Run 'anamnesis init' first.", file=sys.stderr)
+        return 1
+
+    threshold = getattr(args, "days", 90)
+    result = compact_report(memory_dir, decay_threshold_days=threshold)
+
+    print(f"Compact report ({project_dir})")
+    print("=" * 50)
+    print(f"  Total memories: {result.total_memories}")
+    print()
+
+    if result.duplicates:
+        print(f"  Potential duplicates: {len(result.duplicates)} groups")
+        for group in result.duplicates:
+            titles = [f.title or f.path.name for f in group.files]
+            print(f"    Similarity {group.similarity:.0%}: {', '.join(titles)}")
+        print()
+    else:
+        print("  No duplicates found.")
+        print()
+
+    if result.decay and result.decay.stale:
+        print(f"  Stale memories (>{threshold} days): {len(result.decay.stale)}")
+        for mem in result.decay.stale:
+            print(f"    {mem.title} ({mem.days_stale}d stale, importance: {mem.importance})")
+        print()
+    else:
+        print(f"  No stale memories (>{threshold} days).")
+        print()
+
+    print("To merge duplicates or archive stale memories, run /memory compact in Claude Code.")
+    return 0
+
+
 def cmd_doctor(args: argparse.Namespace) -> int:
     """Check memory system health."""
     from anamnesis.project import find_project_root, get_auto_memory_dir
@@ -188,6 +270,19 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     else:
         warnings.append("rules/ directory not found under .claude/")
 
+    # Check session sync status
+    try:
+        from anamnesis.sync import list_sessions, list_unprocessed
+        all_sessions = list_sessions(project_dir)
+        if all_sessions:
+            unprocessed = list_unprocessed(project_dir, memory_dir)
+            if unprocessed:
+                warnings.append(f"{len(unprocessed)} unprocessed sessions (run /memory sync)")
+            else:
+                ok.append(f"All {len(all_sessions)} sessions processed")
+    except Exception:
+        pass  # Session check is best-effort
+
     # Print results
     print(f"anamnesis doctor ({project_dir})")
     print("=" * 50)
@@ -231,6 +326,15 @@ def main(argv: list[str] | None = None) -> int:
     update_parser = subparsers.add_parser("update", help="Update rules/skills without touching user data")
     update_parser.add_argument("--project-dir", help="Project directory (default: auto-detect git root)")
 
+    # sync
+    sync_parser = subparsers.add_parser("sync", help="List unprocessed sessions for sync")
+    sync_parser.add_argument("--project-dir", help="Project directory (default: auto-detect git root)")
+
+    # compact
+    compact_parser = subparsers.add_parser("compact", help="Report duplicate and stale memories")
+    compact_parser.add_argument("--project-dir", help="Project directory (default: auto-detect git root)")
+    compact_parser.add_argument("--days", type=int, default=90, help="Staleness threshold in days (default: 90)")
+
     # doctor
     doctor_parser = subparsers.add_parser("doctor", help="Check memory system health")
     doctor_parser.add_argument("--project-dir", help="Project directory (default: auto-detect git root)")
@@ -244,6 +348,8 @@ def main(argv: list[str] | None = None) -> int:
     commands = {
         "init": cmd_init,
         "update": cmd_update,
+        "sync": cmd_sync,
+        "compact": cmd_compact,
         "doctor": cmd_doctor,
     }
 

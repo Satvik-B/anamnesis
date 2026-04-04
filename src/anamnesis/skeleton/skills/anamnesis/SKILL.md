@@ -1,362 +1,303 @@
 ---
-name: anamnesis
-description: "Memory lifecycle management — init, sync, and health checks. Use when the user says: /anamnesis, /anamnesis init, /anamnesis sync, /anamnesis status, initialize memory, memory health, set up anamnesis, check memory status."
+name: memory
+description: "Agent memory system — sync sessions, search, add, review, compact, load project context, and manage persistent memories across sessions. Use when the user says /memory, /memory sync, /memory compact, /memory search, /memory add, /memory context, /memory list, /memory review, /memory stats, or wants to save/recall knowledge."
 disable-model-invocation: true
 ---
 
-# Anamnesis — Memory Lifecycle Skill
+# /memory — Agent Memory System
 
-Manages the structured memory system lifecycle: initialization, sync, and health monitoring.
+## Memory Root
+`.claude/memory/` — all paths below are relative to this root unless noted.
 
-> **Daily memory updates happen automatically** via `memory-rule.md`. This skill
-> handles setup and maintenance — not everyday saving.
+## Session Data Location
+Claude Code sessions are stored as JSONL files at:
+`~/.claude/projects/<sanitized-project-path>/<session-id>.jsonl`
 
-## Subcommands
-
-Parse the user's input to determine which subcommand to run:
-- `/anamnesis init` (or just `/anamnesis`) → Init
-- `/anamnesis sync` → Sync
-- `/anamnesis status` → Status
-
-If the input includes `--auto` or `auto`, set AUTO_MODE=true (skip confirmation prompts).
+The session ledger tracking processed sessions is at:
+`.claude/memory/.sessions-ledger.yaml`
 
 ---
 
-## `/anamnesis init` — Idempotent Setup
+## Commands
 
-Safe to re-run. Creates the memory structure and imports existing auto-memories.
-
-### Step 1: Detect current state
-
-```python
-project_root = # walk up from cwd to find .git directory
-claude_dir = project_root / ".claude"
-memory_dir = claude_dir / "memory"
-version_file = claude_dir / ".anamnesis-version"
-rule_file = claude_dir / "rules" / "memory-rule.md"
-```
-
-Check what exists:
-- `memory_dir` exists?
-- `memory_dir / "INDEX.md"` exists?
-- `version_file` exists? What version?
-- `rule_file` exists? Has it been user-modified?
-
-### Step 2: Backup
-
-Before making ANY changes, create a backup:
-
-```
-cp -r .claude/ .claude.anamnesis-backup-<YYYYMMDD-HHMMSS>/
-```
-
-Tell the user: "Backed up .claude/ to .claude.anamnesis-backup-&lt;timestamp&gt;/"
-
-### Step 3: Create directory structure
-
-Create these directories if missing:
-```
-.claude/memory/
-.claude/memory/knowledge/
-.claude/memory/contexts/
-.claude/memory/tasks/
-.claude/memory/reflections/
-.claude/memory/archive/
-.claude/memory/conversations/
-```
-
-### Step 4: Create INDEX.md if missing
-
-Only if `.claude/memory/INDEX.md` does NOT exist, create it with empty tables:
-
-```markdown
-# Memory Index (Complete Catalog)
-
-> **Cold index** — loaded on demand for task lookups and knowledge retrieval.
-> For the always-loaded hot pointers, see `MEMORY.md` (auto-memory).
-> For the boundary rule, see `.claude/rules/memory-rule.md`.
-
-## Quick Facts
-- Memory root: `.claude/memory/`
-- Auto-memory root: `~/.claude/projects/<project>/memory/`
+Parse the user's input to determine which subcommand to run.
 
 ---
 
-## Task Memories (runbooks)
-
-| Task | File | Tags | Last Accessed |
-|------|------|------|---------------|
-
----
-
-## Knowledge Base (facts, patterns, conventions)
-
-| Topic | File | Tags | Status |
-|-------|------|------|--------|
+### `/memory` (no args) — Show status
+Read `INDEX.md` and `.sessions-ledger.yaml`, then display:
+- Total memories by type (tasks, knowledge, reflections, contexts)
+- Last 3 accessed memories (by `last_accessed` frontmatter)
+- Any stale memories (`last_accessed` > 30 days ago)
+- Unprocessed sessions count (JSONL files not in ledger)
+- MEMORY.md line count with zone indicator (green <150, yellow 150-179, red 180+)
+- Current working context if set
 
 ---
 
-## Reflections (lessons learned)
+### `/memory sync` — Session sync (Claude-driven extraction)
 
-| File | Content |
-|------|---------|
+Read past Claude Code sessions, understand them, and extract memories.
 
----
-
-## Project Contexts
-
-| Project | File | Status | Last Accessed |
-|---------|------|--------|---------------|
-
----
-
-## Conversations
-
-| Project | File | Date | Topic |
-|---------|------|------|-------|
-
----
-
-## Archive
-
-Stale memories (>90 days without access) move to `archive/YYYY-MM/`.
+#### Step 1: Find unprocessed sessions
+```
+sessions_dir = ~/.claude/projects/<sanitized-project-path>/
+ledger = .claude/memory/.sessions-ledger.yaml
 ```
 
-### Step 5: Install/update memory-rule.md
+1. List all `*.jsonl` files in `sessions_dir`
+2. Read the ledger (YAML file with `sessions:` mapping session_id → metadata)
+3. Filter to sessions NOT in the ledger → these are unprocessed
+4. If none: "All sessions processed. Nothing to sync."
+5. Show the list: session ID, file size, and ask user which to process (or all)
 
-If `rule_file` does not exist, copy it from the skeleton.
+#### Step 2: Read each unprocessed session
 
-If it exists, check if it was user-modified (compare against skeleton version):
-- If modified: ask "memory-rule.md has been customized. Overwrite with latest? (Backup at .claude.anamnesis-backup-*/)"
-  - In AUTO_MODE: overwrite without asking
-- If unmodified: overwrite silently
+For each selected session:
+1. Read the `.jsonl` file line by line
+2. Each line is a JSON object. Extract messages where:
+   - `entry.message.role` is `"user"` or `"assistant"`
+   - `entry.message.content` is a string (or extract `text` from content array)
+3. Build a conversation transcript
+4. Skip tool results, system messages, and permission entries
 
-Note: The backup in Step 2 **always** runs before any changes, so the user can
-always recover their previous state regardless of what happens here.
+#### Step 3: Extract memories (YOU do the understanding)
 
-### Step 6: Auto-memory import
+Read the conversation and identify memory-worthy content:
 
-Scan the auto-memory directory for existing `.md` files:
+**Gotchas** — things that caused problems or need special attention:
+- Error patterns and workarounds discovered
+- API quirks, edge cases, unexpected behavior
+- "Watch out for X", "Don't forget Y" moments
 
-```python
-# Auto-memory location:
-# project_root = /Users/alice/myproject
-# sanitized = -Users-alice-myproject
-auto_memory_dir = ~/.claude/projects/<sanitized-project-path>/memory/
+**Knowledge** — facts, conventions, architecture decisions:
+- How systems work, design choices and rationale
+- Patterns, conventions, and best practices established
+- Technical discoveries ("TIL", "turns out")
+
+**Tasks** — procedures that were followed:
+- Step-by-step workflows that were executed
+- Deployment procedures, migration steps
+- Debugging processes that resolved issues
+
+**Reflections** — lessons from mistakes:
+- Wrong approaches that were tried and abandoned
+- Better alternatives discovered
+- "Next time, do X instead of Y"
+
+For each candidate memory, determine:
+- **Type**: gotcha / knowledge / task / reflection
+- **Title**: Short, descriptive title
+- **Content**: The key information (not raw transcript — synthesize)
+- **Tags**: Relevant technical tags
+- **Importance**: high / medium / low
+- **Confidence**: How sure you are this is worth saving
+
+#### Step 4: Check for conflicts
+
+For each candidate, search existing memory files:
+1. Scan `.claude/memory/{knowledge,tasks,contexts,reflections}/*.md`
+2. Compare title and content for overlap
+3. If high overlap (>80%): suggest SKIP (already know this)
+4. If moderate overlap (60-80%): suggest MERGE (update existing)
+5. If low overlap: proceed as new memory
+
+#### Step 5: Present for approval
+
+Show each candidate to the user:
+```
+Memory #1 [knowledge] (confidence: high)
+  Title: API rate limits require exponential backoff
+  Tags: [api, rate-limiting]
+  Content: The external API enforces 100 req/min...
+  Conflict: MERGE with knowledge/api-limits.md (72% overlap)
+  
+  [Save] [Merge] [Skip] [Edit]
 ```
 
-Find all `.md` files EXCEPT `MEMORY.md` (the hot index is system-managed).
+Wait for user approval on each memory before writing.
 
-For each file found:
-1. Read its content
-2. Categorize by content/filename:
-   - Contains "task", "runbook", "how to" → `tasks/`
-   - Contains "context", "project" → `contexts/`
-   - Contains "mistake", "lesson", "reflection" → `reflections/`
-   - Default → `knowledge/`
-3. Check if a file with the same name already exists in the target directory
-   - If yes: skip (already imported)
-   - If no: queue for import
+#### Step 6: Write approved memories
 
-If AUTO_MODE:
-- Import all queued files without prompting
-Else:
-- Present the list to the user with categories
-- Ask: "Import these N files? (Y/n/select individually)"
+For each approved memory:
+1. Create the file at `.claude/memory/<type>s/<title-slug>.md` with frontmatter:
+   ```yaml
+   ---
+   type: <type>
+   tags: [<tags>]
+   created: <today>
+   last_accessed: <today>
+   access_count: 1
+   importance: <importance>
+   source: sync
+   ---
+   ```
+2. Add entry to `INDEX.md` in the appropriate table
+3. For merged memories: read the existing file, append new content under
+   `## Updated <date>`, update tags (union), update `last_accessed`
 
-For each imported file:
-- If it already has YAML frontmatter, preserve it and add missing fields
-- If it lacks frontmatter, wrap it:
-  ```yaml
-  ---
-  type: <category>
-  tags: []
-  created: <today>
-  last_accessed: <today>
-  access_count: 1
-  importance: medium
-  source: import
-  ---
-  ```
-- Copy to the appropriate `.claude/memory/<type>/` directory
-- Add an entry to INDEX.md in the matching table
+#### Step 7: Update ledger
 
-### Step 7: Report summary
+After processing each session:
+1. Read the ledger YAML
+2. Add an entry:
+   ```yaml
+   sessions:
+     <session-id>:
+       processed_date: <today>
+       memories_created: <count>
+       content_hash: <sha256 of session file>
+   ```
+3. Write the ledger back
 
-```
-Anamnesis initialized successfully!
-
-  Backup:        .claude.anamnesis-backup-20260322-143052/
-  Directories:   6 created (or already existed)
-  INDEX.md:      created (or already existed)
-  Rule file:     installed (or updated / already current)
-  Auto-memories: imported 5, skipped 2 duplicates
-
-  Next: Claude will automatically save memories on every conversation.
-  Run /anamnesis status to check health anytime.
-```
-
-### Step 8: Warn about parallel sessions
-
-```
-Note: If other Claude Code sessions are open for this project,
-they'll pick up the new memory structure on their next turn.
-```
-
----
-
-## `/anamnesis sync` — Catch-up Import
-
-For importing auto-memories that Claude's continuous updates missed (e.g., from
-other sessions or pre-install memories).
-
-### Step 1: Locate auto-memory directory
-
-Same path logic as init Step 6.
-
-### Step 2: Scan for unsynced files
-
-Find `.md` files in auto-memory dir (except MEMORY.md). For each:
-- Check if a corresponding file exists in `.claude/memory/` (by filename match)
-- If not found → mark as "new, unsynced"
-
-### Step 3: Categorize and present
-
-Same categorization logic as init Step 6.
-
-If AUTO_MODE:
-- Import all without prompting
-Else:
-- Present list with categories and ask user to confirm
-
-### Step 4: Import
-
-Same import logic as init Step 6 (add frontmatter, copy, update INDEX.md).
-
-### Step 5: Report
-
+#### Step 8: Report
 ```
 Sync complete!
-  Imported: 3 new memories
-  Skipped:  7 already synced
-  Categories: 2 knowledge, 1 context
+  Sessions processed: 3
+  Memories created: 5 (2 knowledge, 1 gotcha, 1 task, 1 reflection)
+  Memories merged: 2
+  Memories skipped: 1 (already known)
 ```
 
 ---
 
-## `/anamnesis status` — Health Dashboard
+### `/memory sync thread` — Current thread sync
 
-Read-only health check of the memory system.
+Analyze the CURRENT conversation for memory-worthy content.
 
-### Checks to perform:
+1. Review the conversation history in this session
+2. Apply the same extraction logic as session sync (Step 3 above)
+3. Present candidates for approval
+4. Write approved memories
+5. Do NOT update the session ledger (this session is still active)
 
-1. **MEMORY.md line count**
-   ```python
-   auto_memory_dir = ~/.claude/projects/<sanitized>/memory/
-   memory_md = auto_memory_dir / "MEMORY.md"
-   line_count = len(memory_md.read_text().splitlines())
+---
+
+### `/memory compact` — Deduplicate and archive
+
+#### Step 1: Find duplicates
+1. Read all memory files from knowledge/, tasks/, contexts/, reflections/
+2. Compare every pair for title + content similarity
+3. Group near-duplicates (>60% overlap)
+
+#### Step 2: Find stale memories
+1. Check `last_accessed` frontmatter on all memory files
+2. Flag memories not accessed in >90 days (or user-specified threshold)
+3. Protect high-importance memories from auto-archive
+
+#### Step 3: Present findings
+```
+Compact Report
+==============
+Duplicates found: 2 groups
+  1. knowledge/api-auth.md + knowledge/jwt-tokens.md (78% overlap)
+     Suggestion: MERGE into knowledge/api-auth.md
+  2. tasks/deploy-prod.md + tasks/deployment.md (85% overlap)
+     Suggestion: MERGE into tasks/deploy-prod.md
+
+Stale memories: 3
+  1. knowledge/old-api.md (120 days stale, importance: low)
+     Suggestion: ARCHIVE
+  2. tasks/deprecated-flow.md (95 days stale, importance: medium)
+     Suggestion: REVIEW
+  3. knowledge/legacy-auth.md (200 days stale, importance: high)
+     Suggestion: KEEP (high importance) — review manually
+
+[Merge all duplicates] [Archive stale] [Review individually]
+```
+
+#### Step 4: Execute
+- **Merge**: Combine content, union tags, keep the older `created` date,
+  update `last_accessed` to today, delete the duplicate file
+- **Archive**: Move to `archive/YYYY-MM/`, remove from `INDEX.md`
+- **Keep**: Update `last_accessed` to today (resets the clock)
+
+---
+
+### `/memory search <query>` — Search all memories
+1. Read `INDEX.md` — scan for matching entries by name/tags
+2. If not found in index, search across all memory files:
    ```
-   Display with zone:
-   - Green (< 150): "MEMORY.md: {n} lines (healthy)"
-   - Yellow (150-179): "MEMORY.md: {n} lines (approaching limit, consider consolidating)"
-   - Red (180-199): "MEMORY.md: {n} lines (CRITICAL — consolidate now)"
-   - Overflow (200+): "MEMORY.md: {n} lines (OVERFLOW — content is being silently truncated!)"
-
-2. **INDEX.md line count** vs 150 soft cap
-
-3. **Memory counts by type** — count `.md` files in each subdirectory:
-   knowledge/, tasks/, contexts/, reflections/, conversations/, archive/
-
-4. **Stale memories** — scan for `last_accessed:` in frontmatter, flag >30 days
-
-5. **Oversized files** — flag any memory file >80 lines
-
-6. **Unsynced auto-memories** — count `.md` files in auto-memory dir without
-   a corresponding file in `.claude/memory/`
-
-7. **Rule file status** — check `.claude/rules/memory-rule.md` exists
-
-8. **Version check** — read `.claude/.anamnesis-version`
-
-### Output format:
-
-```
-Anamnesis Health Dashboard
-==========================
-
-MEMORY.md:    42 lines   [GREEN]
-INDEX.md:     67 lines   (soft cap: 150)
-Version:      1.0.0      (current)
-Rule file:    installed   (current)
-
-Memory Inventory:
-  knowledge/    8 files
-  tasks/        3 files
-  contexts/     4 files
-  reflections/  2 files
-  conversations/ 1 file
-  archive/      0 files
-  ─────────────────────
-  Total:       18 memories
-
-Warnings:
-  - 2 stale memories (not accessed in 30+ days)
-  - 1 oversized file (contexts/big-project.md: 142 lines)
-  - 3 unsynced auto-memories
-
-Suggestions:
-  - Run /anamnesis sync to import 3 unsynced auto-memories
-  - Review stale memories: knowledge/old-api.md, tasks/deprecated-flow.md
-  - Split oversized file: contexts/big-project.md (142 lines > 80 line guideline)
-```
+   Grep pattern="<query>" path=".claude/memory/"
+   ```
+3. For each match, show: file path, quick reference line, tags, last_accessed
+4. Offer to open/read the most relevant match
+5. Update `last_accessed` and `access_count` on any file that is read
 
 ---
 
-## Memory File Format Reference
+### `/memory add <type> <title>` — Create a new memory
+Types: `task`, `knowledge`, `context`, `reflection`
 
-When creating or importing memory files, use this frontmatter:
+1. Ask the user what content to include (steps, facts, links, gotchas)
+2. Create the file at `.claude/memory/<type>s/<title-slug>.md` with frontmatter
+3. Add the entry to `INDEX.md` in the appropriate table
+4. Confirm creation with file path
 
-```yaml
 ---
-type: knowledge | task | context | reflection | feedback
-tags: [tag1, tag2]
-created: YYYY-MM-DD
-last_accessed: YYYY-MM-DD
-access_count: 1
-importance: high | medium | low
-source: learned | manual | session | import
-references:                        # optional — links to source of truth
-  - url: https://example.com
-    label: Description
-chat_sessions:                     # optional — Claude Code sessions that worked on this
-  - id: abc123                     # session ID (use with `claude --resume <id>`)
-    date: YYYY-MM-DD
-    summary: Brief description of what was done
+
+### `/memory context <name>` — Load project context
+
+**If the context file exists** (`contexts/<name>.md`):
+1. Read the context file
+2. Read all files listed in its `related_memories` frontmatter
+3. Read all files listed in its `key_files` frontmatter (codebase files)
+4. Summarize the loaded context to the user:
+   - What this project is about
+   - Current status / where things left off
+   - Key decisions made
+   - Open questions / next steps
+5. Update `last_accessed`
+6. Say: "Context loaded. Ask me anything about <name>."
+
+**If the context file does NOT exist**:
+1. Search all memory files for the query term
+2. Search the codebase for related files
+3. Present findings and offer to create the context file
+
 ---
-```
 
-The `chat_sessions` field is optional but encouraged for **context-type memories**
-(project snapshots). It links a memory to the Claude Code sessions that created or
-updated it, enabling quick resume via `claude --resume <id>`.
+### `/memory context save <name>` — Save current project context
+Create or update a context file at `.claude/memory/contexts/<name>.md`.
+Ask the user for: description, status, key decisions, open questions, next steps.
 
-Guidelines:
-- Auto-populate when creating/updating a context memory (the current session ID
-  is available in the conversation)
-- Keep the last 5-10 sessions — older ones lose their context window
-- Always include a one-line `summary` so the list is scannable without resuming
+---
 
-## Directory Layout
+### `/memory list [type]` — List memories
+Types: `tasks`, `knowledge`, `contexts`, `reflections`, or `all` (default)
 
-```
-.claude/memory/
-├── INDEX.md               # Cold catalog (on demand, 150-line soft cap)
-├── knowledge/             # Facts, patterns, conventions
-├── tasks/                 # Procedural runbooks ("how to X")
-├── contexts/              # Project state snapshots
-├── reflections/           # Lessons learned, mistakes
-├── conversations/         # Conversation summaries (Slack, meetings, etc.)
-└── archive/               # Stale memories (>90 days)
-```
+Read `INDEX.md` and display the relevant table. Highlight stale entries (>30 days).
 
-MEMORY.md (hot index) lives in the auto-memory dir:
-`~/.claude/projects/<sanitized-project-path>/memory/MEMORY.md`
+---
+
+### `/memory review` — Review and maintain memories
+1. Scan all memory files for `last_accessed` dates
+2. Flag stale memories (>30 days since last access)
+3. For each stale memory, ask: keep, update, or archive?
+4. Move archived memories to `archive/YYYY-MM/`
+5. Remove archived entries from `INDEX.md`
+6. Report: X memories reviewed, Y archived, Z kept
+
+---
+
+### `/memory stats` — Memory system statistics
+Read all memory files and report:
+- Total files by type
+- MEMORY.md line count (with zone)
+- INDEX.md line count
+- Most accessed memories (by access_count)
+- Stale memories (>30 days)
+- Unprocessed sessions count
+- Total processed sessions and memories created via sync
+
+---
+
+## Important Rules
+- ALWAYS update `last_accessed` date when reading a memory file
+- ALWAYS update `access_count` when reading a memory file
+- ALWAYS verify memory content against current code (memory is guidance, not gospel)
+- ALWAYS check for conflicts before writing new memories
+- ALWAYS present candidates for user approval before writing (sync and add)
+- Knowledge and reflection updates during normal work can be done silently
+- Keep INDEX.md under 150 lines — archive when approaching
+- Keep individual memory files under 80 lines — split when larger

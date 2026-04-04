@@ -18,6 +18,7 @@ VERSION_FILE = ".claude/.anamnesis-version"
 USER_DATA_GLOBS = [
     "memory/MEMORY.md",
     "memory/INDEX.md",
+    "memory/.sessions-ledger.yaml",
     "memory/contexts/*",
     "memory/knowledge/*",
     "memory/reflections/*",
@@ -142,9 +143,12 @@ def cleanup_stale_backups(project_dir: Path) -> list[Path]:
 def install(project_dir: Path, config: Config) -> list[str]:
     """Copy skeleton files into project_dir/.claude/, rendering templates.
 
+    Also creates MEMORY.md in the auto-memory directory if missing.
     Returns a list of files that were created.
     Never overwrites existing files.
     """
+    from anamnesis.project import get_auto_memory_dir
+
     skeleton = _skeleton_root()
     if not skeleton.exists():
         raise FileNotFoundError(f"Skeleton directory not found: {skeleton}")
@@ -181,6 +185,22 @@ def install(project_dir: Path, config: Config) -> list[str]:
     version_path = project_dir / VERSION_FILE
     version_path.parent.mkdir(parents=True, exist_ok=True)
     version_path.write_text(__version__ + "\n", encoding="utf-8")
+
+    # Create MEMORY.md in auto-memory directory if missing
+    try:
+        auto_dir = get_auto_memory_dir(project_dir)
+        memory_md = auto_dir / "MEMORY.md"
+        if not memory_md.exists():
+            auto_dir.mkdir(parents=True, exist_ok=True)
+            # Render the MEMORY.md template from skeleton
+            skeleton_memory = skeleton / "memory" / "MEMORY.md"
+            if skeleton_memory.exists():
+                content = skeleton_memory.read_text(encoding="utf-8")
+                content = _render_template(content, context)
+                memory_md.write_text(content, encoding="utf-8")
+                created.append("auto-memory/MEMORY.md")
+    except (FileNotFoundError, OSError):
+        pass  # Auto-memory creation is best-effort
 
     return created
 
