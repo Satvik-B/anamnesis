@@ -141,3 +141,24 @@ class TestSkipsArchiveDir:
         _make_memory(mem / "archive", "archived.md", "2025-01-01")
         result = find_stale_memories(mem, threshold_days=90, today=TODAY)
         assert result == []
+
+
+class TestQuotedDateStrings:
+    """Invariant: quoted date strings must be handled, not silently skipped."""
+
+    def test_quoted_date_detected_as_stale(self, tmp_path: Path) -> None:
+        mem = _setup_memory_dir(tmp_path)
+        # Write a memory with a quoted date string (common in hand-edited files)
+        p = mem / "knowledge" / "manual.md"
+        p.write_text(
+            '---\ntype: knowledge\nlast_accessed: "2025-01-01"\nimportance: low\n---\n# Manual\n'
+        )
+        result = find_stale_memories(mem, threshold_days=90, today=TODAY)
+        assert len(result) == 1
+        assert result[0].path == p
+
+    def test_bare_date_still_works(self, tmp_path: Path) -> None:
+        mem = _setup_memory_dir(tmp_path)
+        _make_memory(mem / "knowledge", "bare.md", "2025-01-01")
+        result = find_stale_memories(mem, threshold_days=90, today=TODAY)
+        assert len(result) == 1

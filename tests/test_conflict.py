@@ -260,3 +260,30 @@ class TestSuggestStrategy:
     def test_boundary_06(self):
         # Exactly 0.6 should not trigger MERGE (> 0.6 required)
         assert suggest_strategy(self._make_conflict(0.6)) == Strategy.ASK
+
+
+class TestFindConflictsSkipsArchive:
+    """Invariant: find_conflicts must never match against archived memories."""
+
+    def test_archived_memories_ignored(self, tmp_path: Path):
+        # Create active memory
+        _write_memory(tmp_path, "auth.md", SAMPLE_MEMORY)
+
+        # Create archived memory with identical content
+        archive_dir = tmp_path / "archive" / "2026-01"
+        archive_dir.mkdir(parents=True)
+        _write_memory(archive_dir, "auth-old.md", SAMPLE_MEMORY)
+
+        conflicts = find_conflicts(
+            title="API Authentication",
+            content="Use bearer tokens for all API calls. JWT tokens with 1h expiry.",
+            tags=["api", "auth"],
+            memory_type="knowledge",
+            memory_dir=tmp_path,
+        )
+
+        # Should only match the active memory, not the archived one
+        matched_paths = {c.existing.path for c in conflicts}
+        archive_dir = tmp_path / "archive"
+        for p in matched_paths:
+            assert not str(p).startswith(str(archive_dir)), f"Matched archived file: {p}"

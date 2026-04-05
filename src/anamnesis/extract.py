@@ -67,7 +67,6 @@ _PATTERNS: dict[MemoryType, list[tuple[re.Pattern[str], bool]]] = {
         (re.compile(r"\bdesign\s+decision\b", re.IGNORECASE), False),
         # Strong
         (re.compile(r"\bTIL\s*:"), True),
-        (re.compile(r"\bbecause\b", re.IGNORECASE), False),
     ],
     MemoryType.TASK: [
         (re.compile(r"\bsteps\s*:", re.IGNORECASE), True),

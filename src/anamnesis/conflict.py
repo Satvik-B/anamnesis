@@ -88,26 +88,21 @@ def _tokenize(text: str) -> set[str]:
     return words - STOP_WORDS
 
 
-def compute_title_similarity(a: str, b: str) -> float:
-    """Simple word-overlap (Jaccard) similarity between two titles."""
-    words_a = _tokenize(a)
-    words_b = _tokenize(b)
-    if not words_a or not words_b:
+def _jaccard(a: set[str], b: set[str]) -> float:
+    """Jaccard index of two word sets."""
+    if not a or not b:
         return 0.0
-    intersection = words_a & words_b
-    union = words_a | words_b
-    return len(intersection) / len(union)
+    return len(a & b) / len(a | b)
+
+
+def compute_title_similarity(a: str, b: str) -> float:
+    """Word-overlap (Jaccard) similarity between two titles."""
+    return _jaccard(_tokenize(a), _tokenize(b))
 
 
 def compute_content_similarity(a: str, b: str) -> float:
     """Jaccard similarity of significant words (stop words removed)."""
-    words_a = _tokenize(a)
-    words_b = _tokenize(b)
-    if not words_a or not words_b:
-        return 0.0
-    intersection = words_a & words_b
-    union = words_a | words_b
-    return len(intersection) / len(union)
+    return _jaccard(_tokenize(a), _tokenize(b))
 
 
 def _compute_tag_overlap(tags_a: list[str], tags_b: list[str]) -> float:
@@ -158,6 +153,12 @@ def find_conflicts(
     for md_file in memory_dir.rglob("*.md"):
         if md_file.name in ("MEMORY.md", "INDEX.md", "README.md"):
             continue
+        # Skip archived memories
+        try:
+            md_file.relative_to(memory_dir / "archive")
+            continue
+        except ValueError:
+            pass
 
         existing = parse_memory_file(md_file)
 

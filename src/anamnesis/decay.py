@@ -75,6 +75,11 @@ def find_stale_memories(
         for md_file in subdir.glob("*.md"):
             fm = _parse_frontmatter(md_file)
             la = fm.get("last_accessed")
+            if isinstance(la, str):
+                try:
+                    la = date.fromisoformat(la)
+                except ValueError:
+                    continue
             if not isinstance(la, date):
                 continue
             days = (today - la).days
