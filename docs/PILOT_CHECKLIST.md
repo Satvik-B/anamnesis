@@ -67,31 +67,30 @@ anamnesis update
 - [ ] Reports which files were updated
 - [ ] Reports which user-data files were skipped
 
-## 6. Claude Code — /anamnesis status
+## 6. Claude Code — /memory (status)
 
 Open Claude Code in the same repo, then type:
 
 ```
-/anamnesis status
+/memory
 ```
 
 - [ ] Skill triggers (recognized by Claude)
 - [ ] Shows MEMORY.md line count with zone indicator
 - [ ] Shows INDEX.md line count
 - [ ] Shows memory counts by type (knowledge, tasks, contexts, etc.)
-- [ ] Shows version info
+- [ ] Shows unprocessed sessions count
 
-## 7. Claude Code — /anamnesis init
+## 7. Claude Code — /memory add
 
 ```
-/anamnesis init
+/memory add knowledge "test topic"
 ```
 
 - [ ] Skill triggers
-- [ ] Detects existing structure (already initialized)
-- [ ] If you have auto-memories (files in `~/.claude/projects/<project>/memory/`),
-      it should offer to import them
-- [ ] Creates backup before making changes
+- [ ] Asks for content, tags, importance
+- [ ] Creates file in `.claude/memory/knowledge/`
+- [ ] Updates INDEX.md with new entry
 
 ## 8. Claude Code — Auto-memory
 

@@ -99,7 +99,7 @@ def cmd_update(args: argparse.Namespace) -> int:
 def cmd_sync(args: argparse.Namespace) -> int:
     """List unprocessed sessions and optionally run basic extraction."""
     from anamnesis.project import find_project_root
-    from anamnesis.sync import list_sessions, list_unprocessed, content_hash
+    from anamnesis.sync import list_sessions, list_unprocessed
 
     project_dir = Path(args.project_dir) if args.project_dir else None
     if project_dir is None:
@@ -147,7 +147,7 @@ def cmd_compact(args: argparse.Namespace) -> int:
         print("No memory directory found. Run 'anamnesis init' first.", file=sys.stderr)
         return 1
 
-    threshold = getattr(args, "days", 90)
+    threshold = args.days
     result = compact_report(memory_dir, decay_threshold_days=threshold)
 
     print(f"Compact report ({project_dir})")
