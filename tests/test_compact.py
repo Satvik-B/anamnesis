@@ -110,3 +110,19 @@ class TestCompactReport:
         assert len(result.decay.stale) >= 1
         # One duplicate group
         assert len(result.duplicates) == 1
+
+    def test_compact_report_never_modifies_files(self, memory_dir):
+        """Invariant: compact_report is diagnostic — must not touch the filesystem."""
+        _make_memory(memory_dir / "knowledge", "stale", "Old Topic", "old content",
+                     last_accessed=date(2025, 1, 1))
+        _make_memory(memory_dir / "knowledge", "fresh", "New Topic", "new content",
+                     last_accessed=date(2026, 4, 1))
+
+        files_before = set(memory_dir.rglob("*.md"))
+        compact_report(memory_dir, decay_threshold_days=90, today=date(2026, 4, 4))
+        files_after = set(memory_dir.rglob("*.md"))
+
+        assert files_before == files_after, (
+            f"compact_report mutated filesystem: "
+            f"before={len(files_before)}, after={len(files_after)}"
+        )

@@ -155,7 +155,7 @@ class TestWriteMemory:
     def test_creates_file(self, memory_dir):
         path = write_memory(memory_dir, "knowledge", "API Auth", "Use JWT tokens", tags=["api", "auth"])
         assert path.exists()
-        assert path.parent.name == "knowledges"
+        assert path.parent.name == "knowledge"
         content = path.read_text()
         assert "# API Auth" in content
         assert "Use JWT tokens" in content
@@ -167,6 +167,26 @@ class TestWriteMemory:
         assert p1 != p2
         assert p1.exists()
         assert p2.exists()
+
+    def test_uses_canonical_dir_names(self, memory_dir):
+        """Invariant: directory names must match the conventions in SCAN_DIRS."""
+        from anamnesis.decay import SCAN_DIRS
+
+        cases = {
+            "knowledge": "knowledge",
+            "task": "tasks",
+            "context": "contexts",
+            "reflection": "reflections",
+        }
+        for memory_type, expected_dir in cases.items():
+            path = write_memory(memory_dir, memory_type, f"Test {memory_type}", "content")
+            assert path.parent.name == expected_dir, (
+                f"write_memory('{memory_type}') created dir '{path.parent.name}', "
+                f"expected '{expected_dir}'"
+            )
+            assert expected_dir in SCAN_DIRS, (
+                f"Dir '{expected_dir}' not in SCAN_DIRS — decay/compact won't find it"
+            )
 
 
 class TestSlugify:

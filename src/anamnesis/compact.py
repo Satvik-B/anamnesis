@@ -20,6 +20,7 @@ from anamnesis.conflict import (
 from anamnesis.decay import (
     DEFAULT_THRESHOLD_DAYS,
     DecayResult,
+    decay_report as _decay_report,
     find_stale_memories,
     run_decay,
 )
@@ -116,7 +117,7 @@ def compact_report(
     """
     files = _scan_memories(memory_dir)
     duplicates = find_duplicates(memory_dir, duplicate_threshold)
-    decay = run_decay(memory_dir, decay_threshold_days, protect_high_importance=True, today=today)
+    decay = _decay_report(memory_dir, decay_threshold_days, today=today)
 
     return CompactResult(
         duplicates=duplicates,

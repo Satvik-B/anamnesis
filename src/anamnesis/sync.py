@@ -123,8 +123,18 @@ def write_memory(
 
     Returns the path to the created file.
     """
+    # Map memory types to their canonical directory names
+    _TYPE_DIRS = {
+        "knowledge": "knowledge",
+        "task": "tasks",
+        "context": "contexts",
+        "reflection": "reflections",
+        "feedback": "feedback",
+        "gotcha": "knowledge",
+    }
     slug = _slugify(title)
-    type_dir = memory_dir / f"{memory_type}s"
+    dir_name = _TYPE_DIRS.get(memory_type, f"{memory_type}s")
+    type_dir = memory_dir / dir_name
     type_dir.mkdir(parents=True, exist_ok=True)
 
     dest = type_dir / f"{slug}.md"
