@@ -61,6 +61,7 @@ def cmd_init(args: argparse.Namespace) -> int:
 
     print()
     print("Done! Claude Code will pick up the new memory system on next conversation.")
+    print("Run /anamnesis sync in Claude Code to extract memories from past sessions.")
     if auto:
         print("(Auto mode: interactive prompts were skipped)")
     return 0
@@ -187,6 +188,19 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         ok.append(f"rules/: {rule_count} rule files")
     else:
         warnings.append("rules/ directory not found under .claude/")
+
+    # Check session sync status
+    try:
+        from anamnesis.sync import list_sessions, list_unprocessed
+        all_sessions = list_sessions(project_dir)
+        if all_sessions:
+            unprocessed = list_unprocessed(project_dir, memory_dir)
+            if unprocessed:
+                warnings.append(f"{len(unprocessed)} unprocessed sessions (run /anamnesis sync)")
+            else:
+                ok.append(f"All {len(all_sessions)} sessions processed")
+    except Exception:
+        pass  # Session check is best-effort
 
     # Print results
     print(f"anamnesis doctor ({project_dir})")
