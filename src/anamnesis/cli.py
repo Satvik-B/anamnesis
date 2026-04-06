@@ -59,17 +59,9 @@ def cmd_init(args: argparse.Namespace) -> int:
         for r in removed:
             print(f"  {r.name}/")
 
-    # Check for unprocessed sessions
-    try:
-        from anamnesis.sync import list_sessions
-        sessions = list_sessions(project_dir)
-        if sessions:
-            print(f"Found {len(sessions)} past sessions. Run /anamnesis sync in Claude Code to extract memories.")
-            print()
-    except Exception:
-        pass
-
+    print()
     print("Done! Claude Code will pick up the new memory system on next conversation.")
+    print("Run /anamnesis sync in Claude Code to extract memories from past sessions.")
     if auto:
         print("(Auto mode: interactive prompts were skipped)")
     return 0
