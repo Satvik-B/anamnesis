@@ -55,6 +55,21 @@ memory file with tags and last-accessed date.
   pointer to a topic that INDEX.md catalogs in detail, but the pointer and the
   catalog entry are different things.
 
+### Auto-Memory → Anamnesis Sync Rule
+
+**Every time you update MEMORY.md (auto-memory), also update the anamnesis
+system.** The two systems must stay in sync:
+
+1. Adding a pointer to MEMORY.md → create or update the detail file in
+   `.claude/memory/<type>/` and add it to INDEX.md
+2. Removing a pointer from MEMORY.md → ensure the detail file still exists
+   in `.claude/memory/` and is cataloged in INDEX.md (demotion, not deletion)
+3. Writing a new auto-memory topic file → also create the corresponding
+   entry in `.claude/memory/` with proper frontmatter
+
+Never update one system without the other. MEMORY.md is the hot cache;
+`.claude/memory/` is the source of truth.
+
 ---
 
 ## Continuous Memory Updates
@@ -175,6 +190,20 @@ but oversized files waste context when loaded.
 
 Archived files are removed from INDEX.md's active tables but remain searchable
 via grep. They keep their original frontmatter for provenance.
+
+---
+
+## Decay Policy
+
+Memories go stale. Enforce these thresholds:
+
+- **>90 days** without access (default): archive to `archive/YYYY-MM/`
+- **>30 days** without access (optional stricter threshold): flag for review
+- **High-importance memories**: never auto-archive — flag for manual review
+- When archiving: remove from INDEX.md active tables, preserve frontmatter
+
+Run `anamnesis compact` or `/memory compact` to check for stale memories and
+duplicates. Run `/memory review` to interactively review flagged memories.
 
 ---
 
