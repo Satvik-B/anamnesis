@@ -40,26 +40,47 @@ path to this skill's directory (the directory containing this SKILL.md file).
 
 ---
 
-### `/anamnesis sync` — Session sync
+### `/anamnesis sync` — Session + auto-memory sync
 
-Read past Claude Code sessions, extract memories, present for approval.
+Sync from two sources:
+1. **Session JSONL files** — past conversation logs
+2. **Auto-memory `.md` files** — files Claude Code's built-in system created in the auto-memory dir
 
-#### Step 1: Discover unprocessed sessions
+#### Step 1a: Discover unprocessed sessions
 Run:
 ```
 python3 <skill_dir>/scripts/list-sessions.py --sessions-dir <sessions_dir> --memory-dir <memory_dir>
 ```
-Parse the JSON output. If `unprocessed` is empty, report "All sessions processed."
-Otherwise, show the list and ask which sessions to process (or all).
+Parse the JSON output.
 
-#### Step 2: Read each session
-For each selected session, read the `.jsonl` file directly.
+#### Step 1b: Discover auto-memory files
+Scan the auto-memory directory (`<sessions_dir>/memory/`) for `.md` files.
+Skip `MEMORY.md` (that's the hot index, not a memory file).
+For each file found, check if a memory with similar title/content already exists
+in `<memory_dir>` (use check-conflicts.py). If no conflict → it's a new candidate.
+
+Report to user:
+- N unprocessed sessions
+- M unsynced auto-memory files
+- Ask which to process (or all)
+
+#### Step 2: Read each source
+
+**For sessions**: Read the `.jsonl` file directly.
 Each line is JSON. Extract messages where `entry.message.role` is `"user"` or `"assistant"`.
 Skip tool results, system messages, and permission entries.
 Build a conversation transcript.
 
+**For auto-memory files**: Read the `.md` file directly. Parse any existing
+frontmatter. Read the content.
+
 #### Step 3: Extract memories (YOU do the understanding)
-Read the conversation and identify memory-worthy content:
+
+**For sessions**: Read the conversation and identify memory-worthy content.
+**For auto-memory files**: Read the content, classify it, add proper frontmatter
+if missing, and restructure into the anamnesis format.
+
+In both cases, identify:
 
 - **Gotchas**: errors, workarounds, "watch out for X", API quirks
 - **Knowledge**: facts, conventions, architecture decisions, "TIL", "turns out"
