@@ -28,14 +28,14 @@ anamnesis init
 - [ ] Creates `.claude/` directory
 - [ ] Reports files created
 - [ ] Verify these exist:
-  - [ ] `.claude/memory/INDEX.md`
-  - [ ] `.claude/rules/memory-rule.md`
+  - [ ] `.claude/anamnesis/INDEX.md`
+  - [ ] `.claude/rules/anamnesis-rule.md`
   - [ ] `.claude/skills/anamnesis/SKILL.md`
   - [ ] `.claude/.anamnesis-version`
-  - [ ] `.claude/memory/knowledge/` (empty dir)
-  - [ ] `.claude/memory/contexts/` (empty dir)
-  - [ ] `.claude/memory/tasks/` (empty dir)
-  - [ ] `.claude/memory/reflections/` (empty dir)
+  - [ ] `.claude/anamnesis/knowledge/` (empty dir)
+  - [ ] `.claude/anamnesis/contexts/` (empty dir)
+  - [ ] `.claude/anamnesis/tasks/` (empty dir)
+  - [ ] `.claude/anamnesis/reflections/` (empty dir)
 
 ## 3. Doctor
 
@@ -67,12 +67,12 @@ anamnesis update
 - [ ] Reports which files were updated
 - [ ] Reports which user-data files were skipped
 
-## 6. Claude Code — /memory (status)
+## 6. Claude Code — /anamnesis (status)
 
 Open Claude Code in the same repo, then type:
 
 ```
-/memory
+/anamnesis
 ```
 
 - [ ] Skill triggers (recognized by Claude)
@@ -81,15 +81,15 @@ Open Claude Code in the same repo, then type:
 - [ ] Shows memory counts by type (knowledge, tasks, contexts, etc.)
 - [ ] Shows unprocessed sessions count
 
-## 7. Claude Code — /memory add
+## 7. Claude Code — /anamnesis add
 
 ```
-/memory add knowledge "test topic"
+/anamnesis add knowledge "test topic"
 ```
 
 - [ ] Skill triggers
 - [ ] Asks for content, tags, importance
-- [ ] Creates file in `.claude/memory/knowledge/`
+- [ ] Creates file in `.claude/anamnesis/knowledge/`
 - [ ] Updates INDEX.md with new entry
 
 ## 8. Claude Code — Auto-memory
@@ -97,26 +97,16 @@ Open Claude Code in the same repo, then type:
 Have a normal conversation with Claude where you learn something. After the
 conversation, check:
 
-- [ ] Claude saved a memory file to `.claude/memory/knowledge/` (or appropriate dir)
+- [ ] Claude saved a memory file to `.claude/anamnesis/knowledge/` (or appropriate dir)
 - [ ] File has proper YAML frontmatter (type, tags, created, etc.)
 - [ ] INDEX.md was updated with a new entry
 
-## 9. Sync — CLI
-
-```bash
-anamnesis sync
-```
-
-- [ ] Reports total sessions and unprocessed count
-- [ ] Lists unprocessed session IDs with file sizes
-- [ ] Directs user to run `/memory sync` in Claude Code
-
-## 10. Sync — Claude Code
+## 9. Sync — Claude Code
 
 Open Claude Code and type:
 
 ```
-/memory sync
+/anamnesis sync
 ```
 
 - [ ] Claude finds unprocessed session JSONL files
@@ -131,7 +121,7 @@ Open Claude Code and type:
 Have a conversation where you discover a gotcha or learn something, then:
 
 ```
-/memory sync thread
+/anamnesis sync thread
 ```
 
 - [ ] Claude analyzes the current conversation
@@ -139,21 +129,10 @@ Have a conversation where you discover a gotcha or learn something, then:
 - [ ] Presents candidates for approval
 - [ ] Writes approved memories with proper frontmatter
 
-## 12. Compact — CLI
-
-```bash
-anamnesis compact
-```
-
-- [ ] Reports total memory count
-- [ ] Identifies duplicate groups (if any) with similarity scores
-- [ ] Identifies stale memories (>90 days, or use `--days 30`)
-- [ ] Directs user to `/memory compact` for semantic merging
-
-## 13. Compact — Claude Code
+## 12. Compact — Claude Code
 
 ```
-/memory compact
+/anamnesis compact
 ```
 
 - [ ] Claude reviews all memories for duplicates
@@ -163,22 +142,21 @@ anamnesis compact
 
 ## 14. Memory Commands — Claude Code
 
-Test the full `/memory` skill:
+Test the full `/anamnesis` skill:
 
-- [ ] `/memory` → shows status dashboard
-- [ ] `/memory search <term>` → searches memories by keyword
-- [ ] `/memory add knowledge <title>` → creates a new memory interactively
-- [ ] `/memory list` → lists all memories from INDEX.md
-- [ ] `/memory list knowledge` → filters by type
-- [ ] `/memory review` → flags stale memories for review
-- [ ] `/memory stats` → shows system statistics
+- [ ] `/anamnesis` → shows status dashboard
+- [ ] `/anamnesis search <term>` → searches memories by keyword
+- [ ] `/anamnesis add knowledge <title>` → creates a new memory interactively
+- [ ] `/anamnesis list` → lists all memories from INDEX.md
+- [ ] `/anamnesis list knowledge` → filters by type
+- [ ] `/anamnesis review` → flags stale memories for review
+- [ ] `/anamnesis stats` → shows system statistics
 
 ## 15. Edge cases
 
 - [ ] Run `anamnesis init` outside a git repo → should show error
 - [ ] Run `anamnesis init --auto` with existing config → skips prompts
 - [ ] Create a large INDEX.md (>150 lines) → doctor should warn
-- [ ] `anamnesis compact --days 30` → uses 30-day staleness threshold
 - [ ] `anamnesis doctor` → reports unprocessed sessions count
 - [ ] Add `.claude/` to `.gitignore` (optional — depends on your preference)
 
@@ -189,5 +167,5 @@ After testing, please share:
 1. **What worked well?**
 2. **What was confusing or broken?**
 3. **Output of `anamnesis doctor`**
-4. **Output of `/memory` in Claude Code**
+4. **Output of `/anamnesis` in Claude Code**
 5. **Any errors or unexpected behavior**
