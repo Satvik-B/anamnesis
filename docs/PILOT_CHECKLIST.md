@@ -1,6 +1,38 @@
 # Anamnesis Pilot Test Checklist
 
-Manual testing guide for pilot testers. Work through each section in order.
+## What is Anamnesis?
+
+Every Claude Code session starts from zero. Your agent doesn't remember the debugging pattern you discovered yesterday, the team convention you explained last week, or the deployment gotcha that cost you an hour. You repeat yourself constantly.
+
+**Anamnesis fixes this.** It's a persistent memory system that gives Claude Code structured, searchable memory across sessions — stored as plain Markdown files you can read, edit, and version control.
+
+### How it works
+
+1. **`anamnesis init`** — one-time setup, scaffolds `.claude/memory/` in your project
+2. **`/anamnesis sync`** — Claude reads your past sessions and extracts knowledge, gotchas, tasks, and lessons into structured memory files with your approval
+3. **`/anamnesis compact`** — Claude finds duplicates and stale memories, proposes merges and archives
+4. Claude's built-in rules (`memory-rule.md`) automatically save new memories during normal conversations
+
+### What you get
+
+- **Gotchas remembered**: "Don't mock the database — prod migration broke last time" stays across sessions
+- **Procedures saved**: Step-by-step runbooks extracted from past work, reusable forever
+- **Corrections stick**: Tell Claude once to use snake_case — it remembers
+- **Zero infrastructure**: Plain Markdown, no databases, no cloud, no API keys
+- **Full control**: Every memory is a file you can read with `cat`, edit with vim, and track with git
+
+### Architecture (30-second version)
+
+```
+~/.claude/projects/<project>/memory/MEMORY.md   ← hot index (auto-loaded, 200-line cap)
+<project>/.claude/memory/INDEX.md                ← cold catalog (loaded on demand)
+<project>/.claude/memory/knowledge/              ← facts, conventions, gotchas
+<project>/.claude/memory/tasks/                  ← step-by-step procedures
+<project>/.claude/memory/reflections/            ← lessons from mistakes
+<project>/.claude/memory/contexts/               ← project state snapshots
+```
+
+---
 
 ## Prerequisites
 
