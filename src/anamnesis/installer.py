@@ -140,10 +140,28 @@ def cleanup_stale_backups(project_dir: Path) -> list[Path]:
     return removed
 
 
+# Map optional modules to their skeleton subdirectory prefixes.
+# Files under these prefixes are only installed if the module is enabled.
+# Everything else (memory/, rules/, skills/anamnesis/) is always installed.
+_MODULE_PATHS: dict[str, list[str]] = {
+    "friday": ["skills/friday/"],
+}
+
+
+def _should_skip_for_modules(rel_path: str, enabled_modules: list[str]) -> bool:
+    """Return True if a skeleton file belongs to a module that isn't enabled."""
+    for module, prefixes in _MODULE_PATHS.items():
+        for prefix in prefixes:
+            if rel_path.startswith(prefix) and module not in enabled_modules:
+                return True
+    return False
+
+
 def install(project_dir: Path, config: Config) -> list[str]:
     """Copy skeleton files into project_dir/.claude/, rendering templates.
 
     Also creates MEMORY.md in the auto-memory directory if missing.
+    Only installs files for enabled modules (config.modules).
     Returns a list of files that were created.
     Never overwrites existing files.
     """
@@ -163,7 +181,17 @@ def install(project_dir: Path, config: Config) -> list[str]:
         if src_file.is_dir():
             continue
 
+        # Skip __pycache__ and compiled Python files
+        if "__pycache__" in src_file.parts or src_file.suffix == ".pyc":
+            continue
+
         rel = src_file.relative_to(skeleton)
+        rel_str = str(rel)
+
+        # Skip files belonging to modules that aren't enabled
+        if _should_skip_for_modules(rel_str, config.modules):
+            continue
+
         dest = target_base / rel
 
         if dest.exists():
@@ -179,7 +207,7 @@ def install(project_dir: Path, config: Config) -> list[str]:
         else:
             shutil.copy2(src_file, dest)
 
-        created.append(str(rel))
+        created.append(rel_str)
 
     # Write version file
     version_path = project_dir / VERSION_FILE
@@ -218,12 +246,24 @@ def update(project_dir: Path) -> tuple[list[str], list[str]]:
     updated: list[str] = []
     skipped: list[str] = []
 
+    # Load config to check enabled modules
+    from anamnesis.config import load_config
+    config = load_config()
+
     for src_file in sorted(skeleton.rglob("*")):
         if src_file.is_dir():
             continue
 
+        # Skip __pycache__ and compiled Python files
+        if "__pycache__" in src_file.parts or src_file.suffix == ".pyc":
+            continue
+
         rel = src_file.relative_to(skeleton)
         rel_str = str(rel)
+
+        # Skip files belonging to modules that aren't enabled
+        if _should_skip_for_modules(rel_str, config.modules):
+            continue
 
         # Never overwrite user data
         if _is_user_data(rel_str):
