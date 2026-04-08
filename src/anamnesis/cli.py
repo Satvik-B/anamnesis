@@ -61,9 +61,14 @@ def cmd_init(args: argparse.Namespace) -> int:
 
     print()
     print("Done! Claude Code will pick up the new memory system on next conversation.")
-    print("Run /anamnesis sync in Claude Code to extract memories from past sessions.")
     if auto:
         print("(Auto mode: interactive prompts were skipped)")
+
+    print()
+    print("┌─────────────────────────────────────────────────────────────┐")
+    print("│  Next step: Open Claude Code and run /anamnesis sync       │")
+    print("│  This will extract memories from your past sessions.       │")
+    print("└─────────────────────────────────────────────────────────────┘")
     return 0
 
 
