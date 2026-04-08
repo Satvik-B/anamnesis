@@ -1,7 +1,9 @@
 # Memory — {{user_name}}
 
-> Hot index — always loaded into conversation context (200-line hard cap).
-> For the complete catalog, see `.claude/memory/INDEX.md`.
+## Getting Started
+Anamnesis was just installed but has no memories yet. Offer the user:
+"Want me to run `/anamnesis sync` to extract memories from your past sessions?"
+After sync completes, delete this section — it's a one-time setup prompt.
 
 ## Identity
 - **Name**: {{user_name}}
