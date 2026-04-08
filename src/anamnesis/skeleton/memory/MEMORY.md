@@ -12,6 +12,9 @@ After sync completes, delete this section — it's a one-time setup prompt.
 ## Active Feedback
 _Behavioral corrections — check these before every response._
 
+## On Failure
+When something fails or goes wrong, check reflections/ and feedback/ in `.claude/memory/` for prior incidents. If a match exists, follow the documented approach. If not, add a new reflection after resolving it.
+
 ## Key Facts
 _Repo-wide facts needed in most conversations._
 
