@@ -2,6 +2,16 @@
 
 A personal memory system exists at `.claude/memory/`. Use it as follows:
 
+## First Session After Init
+
+If `.claude/memory/INDEX.md` exists but has no memory entries (all tables
+empty), this is likely the first session after `anamnesis init`. Offer:
+
+> "It looks like anamnesis was just set up. Want me to run `/anamnesis sync`
+> to extract memories from your past Claude Code sessions?"
+
+Only offer once — if the user declines, don't ask again.
+
 ## Index Boundary Rule: MEMORY.md vs INDEX.md
 
 The memory system has two index files with distinct roles. Never duplicate
